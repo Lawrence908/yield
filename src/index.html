@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Inverted Yield Curve: 10y minus 3m, 1953 to Today</title>
+<meta name="description" content="Is the yield curve inverted, and how long after past inversions did recessions start? The US 10-year minus 3-month spread daily since 1982 and monthly to 1953, every inversion scored against what followed, plus the Canadian curve.">
+<link rel="stylesheet" href="/shared-footer/footer.css">
+<style>
+:root {
+  color-scheme: light;
+  --surface-1: #fcfcfb;
+  --plane: #f9f9f7;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11,11,11,0.10);
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #4a3aa7;
+  --tooltip-bg: rgba(252,252,251,0.97);
+  --warn: #b3541e;
+  --band-alpha: 0.09;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface-1: #1a1a19;
+    --plane: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #9085e9;
+    --tooltip-bg: rgba(26,26,25,0.97);
+    --warn: #e08a4f;
+    --band-alpha: 0.13;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-1: #1a1a19;
+  --plane: #0d0d0d;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --muted: #898781;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --border: rgba(255,255,255,0.10);
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #9085e9;
+  --tooltip-bg: rgba(26,26,25,0.97);
+  --warn: #e08a4f;
+  --band-alpha: 0.13;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--plane);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 8px; }
+
+header h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.02em; }
+header p.sub { margin: 0; color: var(--text-secondary); max-width: 68ch; }
+.chip {
+  display: inline-flex; align-items: baseline; gap: 8px; margin-top: 16px;
+  padding: 5px 12px; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface-1); font-size: 0.82rem; color: var(--text-secondary);
+}
+.chip[hidden] { display: none; }
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--series-3); flex: none; align-self: center; }
+.chip[data-state="inverted"] .dot { background: var(--series-2); }
+.chip b { color: var(--text-primary); font-weight: 650; }
+.stamp { margin-top: 10px; font-size: 0.82rem; color: var(--muted); }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0 8px; }
+.tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.tile .label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); display: flex; align-items: center; gap: 7px; }
+.swatch { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.tile .value { font-size: 1.85rem; font-weight: 650; letter-spacing: -0.02em; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.tile .note { font-size: 0.8rem; color: var(--text-secondary); }
+
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 18px 18px 14px; margin: 16px 0; }
+.card h2 { font-size: 1.05rem; margin: 0 0 2px; letter-spacing: -0.01em; }
+.card p.cap { margin: 0 0 12px; font-size: 0.85rem; color: var(--text-secondary); max-width: 90ch; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-bottom: 12px; }
+.group { display: flex; gap: 4px; flex-wrap: wrap; }
+.group .glabel { font-size: 0.78rem; color: var(--muted); align-self: center; margin-right: 4px; }
+button.seg {
+  font: inherit; font-size: 0.82rem; padding: 5px 11px; cursor: pointer;
+  background: transparent; color: var(--text-secondary);
+  border: 1px solid var(--border); border-radius: 999px;
+}
+button.seg:hover { background: var(--grid); }
+button.seg[aria-pressed="true"] { background: var(--text-primary); color: var(--surface-1); border-color: var(--text-primary); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 8px; font-size: 0.85rem; color: var(--text-secondary); }
+.legend span.item { display: flex; align-items: center; gap: 7px; }
+.legend .swatch { width: 14px; height: 3px; border-radius: 2px; }
+.legend .swatch.dashed { background: none !important; border-top: 3px dashed; width: 14px; height: 0; border-radius: 0; }
+.legend .swatch.band { width: 14px; height: 10px; border: 1px solid var(--border); }
+
+.plot { position: relative; width: 100%; }
+canvas { display: block; width: 100%; touch-action: pan-y; }
+.tooltip {
+  position: absolute; pointer-events: none; opacity: 0; transition: opacity .08s;
+  background: var(--tooltip-bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; font-size: 0.8rem; line-height: 1.45; white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.14); z-index: 5; color: var(--text-primary);
+}
+.tooltip .tdate { color: var(--muted); font-size: 0.74rem; margin-bottom: 3px; }
+.tooltip .trow { display: flex; align-items: center; gap: 7px; }
+.tooltip .tval { font-variant-numeric: tabular-nums; margin-left: auto; padding-left: 14px; font-weight: 600; }
+
+.status { color: var(--text-secondary); font-size: 0.9rem; padding: 40px 0; text-align: center; }
+
+table { border-collapse: collapse; width: 100%; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--grid); }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.tablewrap { overflow-x: auto; }
+tr.open td { font-weight: 650; }
+
+.formula {
+  background: var(--plane); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 16px; margin: 10px 0 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92rem; overflow-x: auto;
+}
+.prose { font-size: 0.92rem; color: var(--text-secondary); }
+.prose h3 { font-size: 0.95rem; color: var(--text-primary); margin: 18px 0 6px; }
+.prose ul { padding-left: 20px; margin: 6px 0; }
+.prose li { margin-bottom: 7px; }
+.prose a { color: var(--series-1); }
+.prose code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.88em; background: var(--plane); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+
+/* A figure the data could not supply renders as a visible gap, never as a
+   silently vanished number. */
+[data-tok] { font-variant-numeric: tabular-nums; }
+.tok-missing { color: var(--warn); border-bottom: 1px dashed var(--warn); }
+.stale { color: var(--warn); }
+
+/* The hub footer is styled by /shared-footer/footer.css, linked above and
+   served by Caddy's shared_footer snippet. Deliberately not restyled here. */
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>The Inverted Yield Curve</h1>
+    <p class="sub">When the 3-month Treasury out-yields the 10-year, the curve is inverted, and since the late 1960s a US recession has followed within about two years nearly every time. This page keeps score: the spread daily since 1982 and monthly back to 1953, every inversion episode measured against what actually followed, every recession shaded. Nothing here is a forecast; the one probability shown is the New York Fed's, as published.</p>
+    <p class="chip" id="chip" hidden></p>
+    <p class="stamp" id="stamp">Loading data…</p>
+  </header>
+
+  <div class="tiles" id="tiles"></div>
+
+  <section class="card">
+    <h2>The spread, daily since 1982</h2>
+    <p class="cap">Percentage points: 10-year minus 3-month Treasury constant-maturity yields, as published by the Federal Reserve. Below the zero line, the curve is inverted. Shaded bands are NBER recessions, peak month through trough. The 10y&minus;2y variant is the one headlines quote; research, and the New York Fed, prefer this one.</p>
+    <div class="controls">
+      <div class="group" role="group" aria-label="Time range">
+        <span class="glabel">Range</span>
+        <button class="seg" data-range="max" aria-pressed="true">Max</button>
+        <button class="seg" data-range="20">20y</button>
+        <button class="seg" data-range="10">10y</button>
+        <button class="seg" data-range="5">5y</button>
+        <button class="seg" data-range="1">1y</button>
+      </div>
+      <div class="group" role="group" aria-label="Series">
+        <span class="glabel">Series</span>
+        <button class="seg" data-series="sp2y" aria-pressed="false">10y&minus;2y</button>
+      </div>
+    </div>
+    <div class="legend" id="legend-main"></div>
+    <div class="plot"><canvas id="c-main" height="400"></canvas><div class="tooltip" id="t-main"></div></div>
+    <p class="status" id="status">Fetching seven decades of yields…</p>
+  </section>
+
+  <section class="card">
+    <h2>Seven decades, monthly</h2>
+    <p class="cap">The same spread built monthly from April 1953: the 10-year average yield minus the 3-month bill rate converted from its discount basis to a bond-equivalent yield, which is the New York Fed's own construction (the formula is in the sources below, and both raw legs ship in this page's data). The dotted segment is daily 1962-1981, whose short leg is a different basis again; it is drawn as its own series and never spliced onto the others.</p>
+    <div class="legend" id="legend-deep"></div>
+    <div class="plot"><canvas id="c-deep" height="340"></canvas><div class="tooltip" id="t-deep"></div></div>
+  </section>
+
+  <section class="card">
+    <h2>Every inversion, scored</h2>
+    <p class="cap" id="rule-cap">Computed from the monthly series on every refresh, never hand-maintained. <span data-tok="rule_statement">…</span></p>
+    <div class="tablewrap"><table id="ep-tbl">
+      <thead><tr><th>First inverted</th><th>Last</th><th>Months</th><th>Deepest</th><th>Recession began</th><th>Lead</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <div class="prose" style="margin:12px 0 0">
+      <p>Three footnotes the table earns. <strong>1966</strong>: the curve inverted twice and no recession came within the window; the false positives stay. <strong>2019</strong>: the inversion was followed by the 2020 recession, but that recession arrived with a pandemic, so how much credit the curve deserves is genuinely unknowable. <strong><span data-tok="newest_label">…</span></strong>: <span data-tok="newest_row">…</span></p>
+      <p>One pattern worth knowing before reading the current re-steepening as relief: in several scored episodes (1990, 2001, 2008) the recession began only after the spread had climbed back above zero. Un-inversion is not an all-clear; in this record it is often the last act before the downturn. The start and end columns above let you check that claim against every row.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>The legs: which end moved</h2>
+    <p class="cap">The spread is just the gap between these two lines, but inversions differ by which leg does the moving. 2022 was the short end rocketing while the long end sat; the late-1970s episodes were both ends chasing inflation upward. The 3-month constant-maturity series begins in September 1981, which is exactly why the published daily spread starts in 1982; the 10-year reaches back to 1962.</p>
+    <div class="legend" id="legend-legs"></div>
+    <div class="plot"><canvas id="c-legs" height="320"></canvas><div class="tooltip" id="t-legs"></div></div>
+  </section>
+
+  <section class="card">
+    <h2>Canada</h2>
+    <p class="cap">The Bank of Canada publishes the legs, not the spread, so the subtraction happens here: 10-year benchmark minus 3-month bill, daily from 2001 because that is the Valet platform's depth, not the bond market's. The dotted monthly series reaches back to 1956 via the OECD, whose short leg is an interbank rate rather than a bill; where the two overlap the gap between them is that basis difference, shown rather than smoothed over. Shading is the C.D. Howe Business Cycle Council chronology.</p>
+    <div class="legend" id="legend-ca"></div>
+    <div class="plot"><canvas id="c-ca" height="320"></canvas><div class="tooltip" id="t-ca"></div></div>
+  </section>
+
+  <section class="card">
+    <h2>The New York Fed's probability</h2>
+    <p class="cap" style="margin-bottom:6px">The one forecast on this page, and it is not ours.</p>
+    <div class="prose">
+      <p>The New York Fed reads this same monthly spread through a probit model and publishes the probability of a US recession within twelve months. Their latest: <b style="color:var(--text-primary)"><span data-tok="nyfed_value">…</span></b> by <span data-tok="nyfed_horizon">…</span>, estimated from <span data-tok="nyfed_asof">…</span> data. Details and history at <a href="https://www.newyorkfed.org/research/capital_markets/ycfaq">their FAQ</a>.</p>
+      <p>They publish it as a legacy spreadsheet, so the value is entered here by hand and dated: last checked <span data-tok="nyfed_reviewed">…</span><span id="nyfed-stale"></span>. A number that looks fresh because a script touched a file would be worse than one that is honestly dated. This page computes no probabilities of its own.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Revisions to published history</h2>
+    <p class="cap" id="rev-cap">Checking…</p>
+    <div class="tablewrap" id="rev-wrap" style="display:none"><table id="rev-tbl">
+      <thead><tr><th>Observed</th><th>Series</th><th>Values changed</th><th>Span</th><th>Largest change</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="prose" style="margin:10px 0 0">Treasury constant-maturity yields are near-final the day they are published, unlike the labour and survey data elsewhere in this collection, so this log is expected to stay short. That makes it more interesting, not less: an entry here means Treasury or the Bank of Canada restated a number this page had already shown. Every refresh is diffed against the one before it; new observations are not revisions and are not listed.</p>
+  </section>
+
+  <section class="card">
+    <h2>Sources and construction</h2>
+    <div class="prose" style="margin-top:6px">
+      <p style="margin-top:0">The core series is published, not computed here:</p>
+      <div class="formula">spread (pp) = 10-year constant-maturity yield &minus; 3-month constant-maturity yield</div>
+      <p>Where this page does compute (the monthly and pre-1982 spreads), the 3-month bill's discount-basis rate is first converted to a bond-equivalent yield, the New York Fed's construction, with <code>d</code> the discount rate as a decimal:</p>
+      <div class="formula">BEY = 365 d / (360 &minus; 91 d)</div>
+      <h3>United States</h3>
+      <ul>
+        <li><strong>Daily spreads, as published</strong>: FRED <a href="https://fred.stlouisfed.org/series/T10Y3M">T10Y3M</a> (from 1982-01-04) and <a href="https://fred.stlouisfed.org/series/T10Y2Y">T10Y2Y</a> (from 1976-06-01), both from Federal Reserve H.15 constant-maturity yields. Legs: <a href="https://fred.stlouisfed.org/series/DGS10">DGS10</a> (daily from 1962) and <a href="https://fred.stlouisfed.org/series/DGS3MO">DGS3MO</a> (daily from September 1981).</li>
+        <li><strong>Monthly to 1953</strong>: <a href="https://fred.stlouisfed.org/series/GS10">GS10</a> minus BEY(<a href="https://fred.stlouisfed.org/series/TB3MS">TB3MS</a>), computed here, both raw legs shipped alongside so the arithmetic is checkable. The construction was verified against the spread column of the NY Fed's own <a href="https://www.newyorkfed.org/medialibrary/media/research/capital_markets/allmonth.xls">workbook</a> across their 1959-onward sample.</li>
+        <li><strong>Daily 1962-1981 segment</strong>: DGS10 minus BEY(<a href="https://fred.stlouisfed.org/series/DTB3">DTB3</a>), the secondary-market bill rate, a different basis from the constant-maturity spread. Its own labelled series; nothing on this page is spliced.</li>
+        <li><strong>Recession bands</strong>: NBER dates via <a href="https://fred.stlouisfed.org/series/USREC">USREC</a>, <span data-tok="usrec_count">…</span> recessions since 1854 in the shared dataset, drawn peak month through trough.</li>
+      </ul>
+      <h3>Canada</h3>
+      <ul>
+        <li><strong>Daily from 2001</strong>: Bank of Canada Valet, keyless, series <a href="https://www.bankofcanada.ca/valet/series/BD.CDN.10YR.DQ.YLD">BD.CDN.10YR.DQ.YLD</a> minus <a href="https://www.bankofcanada.ca/valet/series/TB.CDN.90D.MID">TB.CDN.90D.MID</a>.</li>
+        <li><strong>Monthly from 1956</strong>: OECD Main Economic Indicators via FRED, <a href="https://fred.stlouisfed.org/series/IRLTLT01CAM156N">IRLTLT01CAM156N</a> minus <a href="https://fred.stlouisfed.org/series/IR3TIB01CAM156N">IR3TIB01CAM156N</a>. The short leg is an interbank rate, not a bill; stated wherever it is drawn.</li>
+        <li><strong>Recession bands</strong>: <a href="https://www.cdhowe.org/wp-content/uploads/2024/12/Commentary_366_0-2.pdf">C.D. Howe Institute Business Cycle Council</a> chronology (Commentary 366, Table 1), COVID-19 dated by the Council's <a href="https://cdhowe.org/council-reports/cd-howe-institute-business-cycle-council-declares-end-Covid-19-recession">2021 declaration</a>. No API exists; the dates are curated with citations.</li>
+      </ul>
+      <h3>Plumbing</h3>
+      <ul>
+        <li>FRED is fetched keyless-first (the public CSV endpoint), keyed API as fallback; Valet has no keys at all. If FRED went dark entirely, the US daily legs would rebuild from the <a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve">Treasury's own par yield curve XML</a> (1990 onward) and the page would say so.</li>
+        <li>Refreshes twice each weekday via cron, after the H.15 afternoon posting; the stamp above says when data last moved. Yields are near-final at publication, so most runs verify rather than change.</li>
+        <li>Series follow the shared <code>econ-core</code> contract (id, provenance, units, frequency, confidence, observations, splices) used across <a href="https://jobs.chrislawrence.ca">jobs</a>, <a href="https://debt.chrislawrence.ca">debt</a> and <a href="https://diesel.chrislawrence.ca">diesel</a>, with a vintages field reserved for as-published (ALFRED) views: designed in now, populated later.</li>
+        <li>Raw data: <a href="/api/data">/api/data</a>, or the files under <a href="/data/series.json">/data/</a>.</li>
+        <li>Assembled with Claude (Anthropic). Sources above are the record; this page adds arithmetic and honesty about it, not opinions.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<footer class="chrislawrence-footer">
+  <a href="https://chrislawrence.ca" class="footer-home-link" aria-label="Back to chrislawrence.ca">
+    <img src="/shared-footer/logo-portrait.png" alt="Chris Lawrence" class="footer-logo"
+         width="32" height="32" loading="lazy" onerror="this.remove()">
+    <span class="footer-home-link-text">Back to chrislawrence.ca</span>
+  </a>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var YEAR = 365.25 * 86400000;
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var state = { p: null, range: "max", show2y: false };
+
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function rgba(hex, a) {
+    var n = parseInt(hex.replace("#", ""), 16);
+    return "rgba(" + (n >> 16 & 255) + "," + (n >> 8 & 255) + "," + (n & 255) + "," + a + ")";
+  }
+  function ms(iso) { return Date.parse(iso + "T00:00:00Z"); }
+  function pts(entry) { return entry.obs.map(function (o) { return [ms(o[0]), o[1]]; }); }
+  function monthWord(ym) { var q = ym.split("-"); return MONTHS[+q[1] - 1] + " " + q[0]; }
+  function dayWord(iso) { var q = iso.split("-"); return MONTHS[+q[1] - 1] + " " + (+q[2]) + ", " + q[0]; }
+
+  function fmtPp(v) { return v === null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(2); }
+  function fmtPct(v) { return v === null ? "—" : v.toFixed(2) + "%"; }
+
+  function niceTicks(lo, hi, target) {
+    var span = hi - lo; if (span <= 0) span = 1;
+    var raw = span / target;
+    var mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var norm = raw / mag;
+    var step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10) * mag;
+    var ticks = [];
+    for (var k = Math.ceil(lo / step); k * step <= hi + step * 0.001; k++) {
+      ticks.push(Math.round(k * step * 1e6) / 1e6);
+    }
+    return ticks;
+  }
+
+  // ------------------------------------------------------------------
+  // Time-scaled canvas chart: mixed frequencies, recession bands,
+  // dashed segments, crosshair tooltip. Shared engine with jobs.
+  // ------------------------------------------------------------------
+  function TimeChart(canvasId, tooltipId, opts) {
+    this.canvas = document.getElementById(canvasId);
+    this.tip = document.getElementById(tooltipId);
+    this.opts = opts || {};
+    this.hover = null;
+    this.h = parseInt(this.canvas.getAttribute("height"), 10) || 300;
+    var self = this;
+    this.canvas.addEventListener("mousemove", function (e) { self.onMove(e.clientX); });
+    this.canvas.addEventListener("mouseleave", function () { self.clearHover(); });
+    this.canvas.addEventListener("touchmove", function (e) { if (e.touches[0]) self.onMove(e.touches[0].clientX); }, { passive: true });
+    this.canvas.addEventListener("touchend", function () { self.clearHover(); });
+    this.canvas.addEventListener("touchcancel", function () { self.clearHover(); });
+  }
+
+  TimeChart.prototype.clearHover = function () { this.hover = null; this.tip.style.opacity = 0; this.draw(); };
+
+  TimeChart.prototype.setData = function (series, bands) {
+    this.series = series.filter(function (s) { return s.points.length; });
+    this.bands = bands || [];
+    var union = [];
+    this.series.forEach(function (s) {
+      s.medGap = medianGap(s.points);
+      s.points.forEach(function (pt) { union.push(pt[0]); });
+    });
+    union.sort(function (a, b) { return a - b; });
+    this.union = union.filter(function (v, i) { return i === 0 || v !== union[i - 1]; });
+    this.hover = null;
+    this.draw();
+  };
+
+  function medianGap(points) {
+    if (points.length < 2) return YEAR;
+    var gaps = [];
+    for (var i = 1; i < points.length; i++) gaps.push(points[i][0] - points[i - 1][0]);
+    gaps.sort(function (a, b) { return a - b; });
+    return gaps[Math.floor(gaps.length / 2)];
+  }
+
+  function nearest(points, t) {
+    var lo = 0, hi = points.length - 1;
+    while (lo < hi) { var mid = (lo + hi) >> 1; if (points[mid][0] < t) lo = mid + 1; else hi = mid; }
+    if (lo > 0 && Math.abs(points[lo - 1][0] - t) < Math.abs(points[lo][0] - t)) lo -= 1;
+    return lo;
+  }
+
+  TimeChart.prototype.onMove = function (clientX) {
+    if (!this.geom || !this.union || !this.union.length) return;
+    var rect = this.canvas.getBoundingClientRect();
+    var g = this.geom;
+    var t = this.x0 + (clientX - rect.left - g.left) / (g.right - g.left) * (this.x1 - this.x0);
+    var k = nearest(this.union.map(function (v) { return [v, 0]; }), t);
+    var snapped = this.union[Math.max(0, Math.min(this.union.length - 1, k))];
+    if (snapped === this.hover) return;
+    this.hover = snapped;
+    this.draw();
+    this.showTip(snapped, rect);
+  };
+
+  TimeChart.prototype.showTip = function (t, rect) {
+    var monthly = true;
+    this.series.forEach(function (s) { if (s.medGap < 20 * 86400000) monthly = false; });
+    var html = '<div class="tdate">' + new Date(t).toISOString().slice(0, monthly ? 7 : 10) + "</div>";
+    var shown = 0;
+    this.series.forEach(function (s) {
+      var i = nearest(s.points, t);
+      var pt = s.points[i];
+      if (Math.abs(pt[0] - t) > s.medGap * 0.75) return;
+      html += '<div class="trow"><span class="swatch" style="background:' + css(s.color) + '"></span>' +
+              s.name + '<span class="tval">' + (s.fmt || fmtPp)(pt[1]) + "</span></div>";
+      shown++;
+    });
+    if (!shown) { this.tip.style.opacity = 0; return; }
+    this.tip.innerHTML = html;
+    this.tip.style.opacity = 1;
+    var g = this.geom;
+    var px = g.left + (t - this.x0) / (this.x1 - this.x0) * (g.right - g.left);
+    var w = this.tip.offsetWidth;
+    var left = px + 14;
+    if (left + w > rect.width - 4) left = px - w - 14;
+    if (left < 4) left = 4;
+    this.tip.style.left = left + "px";
+    this.tip.style.top = "14px";
+  };
+
+  TimeChart.prototype.draw = function () {
+    var cv = this.canvas, ctx = cv.getContext("2d");
+    var dpr = window.devicePixelRatio || 1;
+    var w = cv.clientWidth, h = this.h;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    cv.style.height = h + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    if (!this.series || !this.series.length) return;
+
+    var pad = { l: 46, r: 12, t: 10, b: 26 };
+    var g = { left: pad.l, right: w - pad.r, top: pad.t, bottom: h - pad.b };
+    this.geom = g;
+
+    var x0 = Infinity, x1 = -Infinity, lo = Infinity, hi = -Infinity;
+    this.series.forEach(function (s) {
+      s.points.forEach(function (pt) {
+        if (pt[0] < x0) x0 = pt[0];
+        if (pt[0] > x1) x1 = pt[0];
+        if (pt[1] !== null && isFinite(pt[1])) { if (pt[1] < lo) lo = pt[1]; if (pt[1] > hi) hi = pt[1]; }
+      });
+    });
+    if (!isFinite(lo)) return;
+    var padY = (hi - lo) * 0.08 || 1;
+    lo -= padY; hi += padY;
+    if (this.opts.includeZero && lo > 0) lo = 0;
+    if (this.opts.includeZero && hi < 0) hi = 0;
+    this.x0 = x0; this.x1 = x1;
+
+    var muted = css("--muted"), grid = css("--grid"), axis = css("--axis");
+    var X = function (t) { return g.left + (t - x0) / Math.max(1, x1 - x0) * (g.right - g.left); };
+    var Y = function (v) { return g.bottom - (v - lo) / (hi - lo) * (g.bottom - g.top); };
+
+    // recession bands first, behind everything
+    (this.bands || []).forEach(function (b) {
+      var s = Math.max(x0, b.start), e = Math.min(x1, b.end);
+      if (e <= s) return;
+      ctx.fillStyle = b.fill;
+      ctx.fillRect(X(s), g.top, Math.max(1, X(e) - X(s)), g.bottom - g.top);
+    });
+
+    // y grid
+    ctx.font = "11px system-ui, sans-serif";
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    var yt = niceTicks(lo, hi, 6);
+    var yFmt = this.opts.yFmt || function (v) { return String(Math.round(v * 100) / 100); };
+    yt.forEach(function (v) {
+      var y = Y(v);
+      ctx.strokeStyle = grid; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(g.left, Math.round(y) + 0.5); ctx.lineTo(g.right, Math.round(y) + 0.5); ctx.stroke();
+      ctx.fillStyle = muted;
+      ctx.fillText(yFmt(v), g.left - 8, y);
+    });
+
+    // the zero line is the entire story on a spread chart; draw it heavier
+    if (lo < 0 && hi > 0) {
+      ctx.strokeStyle = axis; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(g.left, Math.round(Y(0)) + 0.5); ctx.lineTo(g.right, Math.round(Y(0)) + 0.5); ctx.stroke();
+    }
+
+    // x ticks: years, thinned by span
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    var firstYear = new Date(x0).getUTCFullYear();
+    var lastYear = new Date(x1).getUTCFullYear();
+    var years = lastYear - firstYear;
+    var stepY = years > 60 ? 10 : years > 30 ? 5 : years > 12 ? 2 : 1;
+    for (var yr = Math.ceil(firstYear / stepY) * stepY; yr <= lastYear; yr += stepY) {
+      var t = Date.UTC(yr, 0, 1);
+      if (t < x0 || t > x1) continue;
+      var px = X(t);
+      ctx.strokeStyle = grid; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(Math.round(px) + 0.5, g.top); ctx.lineTo(Math.round(px) + 0.5, g.bottom); ctx.stroke();
+      ctx.fillStyle = muted; ctx.fillText(String(yr), px, g.bottom + 6);
+    }
+
+    // axis baseline
+    ctx.strokeStyle = axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(g.left, Math.round(g.bottom) + 0.5); ctx.lineTo(g.right, Math.round(g.bottom) + 0.5); ctx.stroke();
+
+    // series
+    ctx.lineJoin = "round"; ctx.lineCap = "round";
+    var surface = css("--surface-1");
+    this.series.forEach(function (s) {
+      var color = css(s.color);
+      ctx.strokeStyle = color; ctx.lineWidth = s.width || 2;
+      ctx.setLineDash(s.dash ? [5, 4] : []);
+      ctx.beginPath();
+      var pen = false;
+      s.points.forEach(function (pt) {
+        if (pt[1] === null || !isFinite(pt[1])) { pen = false; return; }
+        var xx = X(pt[0]), yy = Y(pt[1]);
+        if (!pen) { ctx.moveTo(xx, yy); pen = true; } else { ctx.lineTo(xx, yy); }
+      });
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    // crosshair + hover markers
+    if (this.hover !== null) {
+      var hx = X(this.hover);
+      ctx.strokeStyle = axis; ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(Math.round(hx) + 0.5, g.top); ctx.lineTo(Math.round(hx) + 0.5, g.bottom); ctx.stroke();
+      ctx.setLineDash([]);
+      var hoverT = this.hover;
+      this.series.forEach(function (s) {
+        var i = nearest(s.points, hoverT);
+        var pt = s.points[i];
+        if (Math.abs(pt[0] - hoverT) > s.medGap * 0.75 || pt[1] === null) return;
+        ctx.beginPath(); ctx.arc(X(pt[0]), Y(pt[1]), 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = css(s.color); ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = surface; ctx.stroke();
+      });
+    }
+  };
+
+  // ------------------------------------------------------------------
+  // assembly
+  // ------------------------------------------------------------------
+  var ppFmt = function (v) { return fmtPp(v); };
+  var charts = {
+    main: new TimeChart("c-main", "t-main", { includeZero: true, yFmt: ppFmt }),
+    deep: new TimeChart("c-deep", "t-deep", { includeZero: true, yFmt: ppFmt }),
+    legs: new TimeChart("c-legs", "t-legs", { includeZero: true, yFmt: function (v) { return Math.round(v * 10) / 10 + "%"; } }),
+    ca: new TimeChart("c-ca", "t-ca", { includeZero: true, yFmt: ppFmt })
+  };
+
+  function S(id) {
+    var p = state.p;
+    return (p && p.series && p.series[id]) || null;
+  }
+
+  function bandList(which, fromMs) {
+    var p = state.p, out = [];
+    if (!p || !p.recessions) return out;
+    var defs = [
+      { key: "us", set: p.recessions.us, varName: "--series-1" },
+      { key: "ca", set: p.recessions.ca, varName: "--series-2" }
+    ];
+    var alpha = parseFloat(css("--band-alpha")) || 0.09;
+    defs.forEach(function (d) {
+      if (which.indexOf(d.key) === -1 || !d.set) return;
+      d.set.bands.forEach(function (b) {
+        var start = ms(b.peak + "-01");
+        var trough = b.trough.split("-");
+        var end = Date.UTC(+trough[0], +trough[1], 1) - 86400000;
+        if (end < fromMs) return;
+        out.push({ start: start, end: end, fill: rgba(css(d.varName), alpha) });
+      });
+    });
+    return out;
+  }
+
+  function legend(elId, items) {
+    document.getElementById(elId).innerHTML = items.map(function (it) {
+      var cls = "swatch" + (it.dash ? " dashed" : "") + (it.band ? " band" : "");
+      var style = it.band
+        ? "background:" + rgba(css(it.color), parseFloat(css("--band-alpha")) * 2)
+        : (it.dash ? "border-top-color:" + css(it.color) : "background:" + css(it.color));
+      return '<span class="item"><span class="' + cls + '" style="' + style + '"></span>' + it.name + "</span>";
+    }).join("");
+  }
+
+  function cutoffMs() {
+    if (state.range === "max") return -Infinity;
+    var e = S("us_spread_10y3m");
+    if (!e) return -Infinity;
+    return ms(e.as_of) - parseInt(state.range, 10) * YEAR;
+  }
+
+  function clip(points, from) {
+    return from === -Infinity ? points : points.filter(function (pt) { return pt[0] >= from; });
+  }
+
+  function renderMain() {
+    var from = cutoffMs();
+    var sp3 = S("us_spread_10y3m"), sp2 = S("us_spread_10y2y");
+    var series = [];
+    if (sp3) series.push({ name: "10y−3m", color: "--series-1", points: clip(pts(sp3), from) });
+    if (state.show2y && sp2) series.push({ name: "10y−2y", color: "--series-4", points: clip(pts(sp2), from) });
+    charts.main.setData(series, bandList(["us"], from));
+    var items = [{ name: "10y−3m, as published", color: "--series-1" }];
+    if (state.show2y) items.push({ name: "10y−2y, as published", color: "--series-4" });
+    items.push({ name: "US recessions (NBER)", color: "--series-1", band: true });
+    legend("legend-main", items);
+  }
+
+  function renderRest() {
+    var mon = S("us_spread_10y3m_monthly"), seg = S("us_spread_10y3m_1962_1981");
+    charts.deep.setData([
+      mon && { name: "Monthly, 10y − BEY(3m bill)", color: "--series-1", points: pts(mon) },
+      seg && { name: "Daily 1962-81 segment", color: "--series-3", dash: true, width: 1.5, points: pts(seg) }
+    ].filter(Boolean), bandList(["us"], -Infinity));
+    legend("legend-deep", [
+      { name: "Monthly from 1953, computed", color: "--series-1" },
+      { name: "Daily 1962-81, secondary-market basis (dotted)", color: "--series-3", dash: true },
+      { name: "US recessions", color: "--series-1", band: true }
+    ]);
+
+    var y10 = S("us_10y"), y3 = S("us_3m");
+    charts.legs.setData([
+      y10 && { name: "10-year", color: "--series-1", points: pts(y10), fmt: fmtPct },
+      y3 && { name: "3-month", color: "--series-2", points: pts(y3), fmt: fmtPct }
+    ].filter(Boolean), bandList(["us"], y10 ? pts(y10)[0][0] : -Infinity));
+    legend("legend-legs", [
+      { name: "10-year constant maturity", color: "--series-1" },
+      { name: "3-month constant maturity", color: "--series-2" },
+      { name: "US recessions", color: "--series-1", band: true }
+    ]);
+
+    var caD = S("ca_spread_10y3m"), caM = S("ca_spread_10y3m_monthly");
+    charts.ca.setData([
+      caM && { name: "Monthly, long − 3m interbank", color: "--series-3", dash: true, width: 1.5, points: pts(caM) },
+      caD && { name: "Daily, 10y − 3m bill", color: "--series-2", points: pts(caD) }
+    ].filter(Boolean), bandList(["ca"], -Infinity));
+    legend("legend-ca", [
+      { name: "Daily from 2001, benchmark − bill", color: "--series-2" },
+      { name: "Monthly from 1956, OECD interbank basis (dotted)", color: "--series-3", dash: true },
+      { name: "Canadian recessions (C.D. Howe)", color: "--series-2", band: true }
+    ]);
+  }
+
+  function renderAll() { renderMain(); renderRest(); }
+
+  // ------------------------------------------------------------------
+  // tokens: prose numbers render from data, never from markup
+  // ------------------------------------------------------------------
+  function fillTokens(map) {
+    document.querySelectorAll("[data-tok]").forEach(function (el) {
+      var key = el.getAttribute("data-tok");
+      if (map[key] === undefined) { el.classList.add("tok-missing"); el.textContent = "⟨" + key + "⟩"; }
+      else el.textContent = map[key];
+    });
+  }
+
+  function buildTokens(p) {
+    var map = {};
+    var an = p.analysis || {};
+    var ep = an.episodes || {};
+    if (ep.rule) map.rule_statement = ep.rule.statement;
+    if (p.recessions && p.recessions.us) {
+      map.usrec_count = String(p.recessions.us.bands.length);
+      map.usrec_asof = monthWord(p.recessions.us.as_of.slice(0, 7));
+    }
+    // The newest-episode footnote is built entirely from the computed row, so
+    // it stays true when the open row eventually resolves either way.
+    if (ep.episodes && ep.episodes.length) {
+      var newest = ep.episodes[ep.episodes.length - 1];
+      map.newest_label = newest.start.slice(0, 4);
+      var shape = newest.months_inverted + " months inverted with a trough of " +
+                  fmtPp(newest.trough.value) + " pp";
+      if (newest.outcome === "pending") {
+        map.newest_row = "the newest episode, " + shape +
+          ", has not been followed by a recession as of the NBER data through " +
+          (map.usrec_asof || "the latest month") +
+          "; the row stays open rather than being scored either way.";
+      } else if (newest.outcome === "recession") {
+        map.newest_row = "the newest episode, " + shape +
+          ", was followed by the " + monthWord(newest.recessions[0]) +
+          " recession, " + newest.lead_months + " months after it began.";
+      } else {
+        map.newest_row = "the newest episode, " + shape +
+          ", saw no recession within the window; it joins the false positives.";
+      }
+    }
+    var meta = p.meta || {};
+    var ny = meta.nyfed_recession_probability;
+    if (ny) {
+      map.nyfed_value = ny.value.toFixed(1) + "%";
+      map.nyfed_horizon = monthWord(ny.horizon);
+      map.nyfed_asof = monthWord(ny.as_of);
+      map.nyfed_reviewed = ny.last_reviewed;
+      var age = Math.round((Date.now() - ms(ny.last_reviewed)) / 86400000);
+      if (age > 45) {
+        document.getElementById("nyfed-stale").innerHTML =
+          ' <span class="stale">(' + age + " days ago; due an update)</span>";
+      }
+    }
+    return map;
+  }
+
+  function buildChip(p) {
+    var st = p.analysis && p.analysis.status && p.analysis.status.us_spread_10y3m;
+    var chip = document.getElementById("chip");
+    if (!st) return;
+    var word = st.inverted ? "Inverted" : "Not inverted";
+    var detail = st.inverted
+      ? fmtPp(st.latest[1]) + " pp · " + st.streak_obs + " trading days and counting"
+      : fmtPp(st.latest[1]) + " pp on " + dayWord(st.latest[0]) +
+        (st.last_negative ? " · positive for " + st.streak_obs + " trading days" : "");
+    chip.innerHTML = '<span class="dot"></span><span><b>' + word + "</b> · 10y−3m " + detail + "</span>";
+    chip.setAttribute("data-state", st.inverted ? "inverted" : "normal");
+    chip.hidden = false;
+  }
+
+  function buildTiles(p) {
+    var an = p.analysis || {};
+    var st = an.status || {};
+    var t = [];
+    var s3 = st.us_spread_10y3m, s2 = st.us_spread_10y2y;
+    if (s3) t.push({ label: "US 10y−3m", color: "var(--series-1)",
+                     value: fmtPp(s3.latest[1]),
+                     note: dayWord(s3.latest[0]) + " · " + (s3.inverted ? "inverted" : "not inverted") });
+    if (s2) t.push({ label: "US 10y−2y", color: "var(--series-4)",
+                     value: fmtPp(s2.latest[1]),
+                     note: dayWord(s2.latest[0]) + " · " + (s2.inverted ? "inverted" : "not inverted") });
+    if (s3 && s3.last_negative) {
+      var days = Math.round((ms(s3.latest[0]) - ms(s3.last_negative)) / 86400000);
+      t.push({ label: "Last inverted day", color: "var(--series-2)",
+               value: String(days) + "d",
+               note: "ago · " + dayWord(s3.last_negative) });
+    }
+    var stats = (an.episodes || {}).stats;
+    if (stats && stats.median_lead_months !== undefined) {
+      t.push({ label: "Median warning", color: "var(--series-3)",
+               value: stats.median_lead_months + " mo",
+               note: "first inversion to NBER peak, " + stats.credited_episodes + " recessions" });
+    }
+    document.getElementById("tiles").innerHTML = t.map(function (x) {
+      return '<div class="tile"><div class="label"><span class="swatch" style="background:' + x.color + '"></span>' + x.label +
+             '</div><div class="value">' + x.value + '</div><div class="note">' + x.note + "</div></div>";
+    }).join("");
+  }
+
+  function buildEpisodes(p) {
+    var ep = p.analysis && p.analysis.episodes;
+    if (!ep || !ep.episodes) return;
+    var rows = ep.episodes.slice().reverse().map(function (e) {
+      var rec, lead;
+      if (e.outcome === "recession") {
+        rec = e.recessions.map(monthWord).join(" + ");
+        lead = e.lead_months + " mo";
+      } else if (e.outcome === "pending") {
+        rec = "<b>none (yet)</b>"; lead = "—";
+      } else {
+        rec = "none within 24 mo"; lead = "—";
+      }
+      return "<tr" + (e.outcome === "pending" ? ' class="open"' : "") + "><td>" + monthWord(e.start) +
+             "</td><td>" + monthWord(e.end) + "</td><td>" + e.months_inverted +
+             "</td><td>" + fmtPp(e.trough.value) + " (" + monthWord(e.trough.month) + ")" +
+             "</td><td>" + rec + "</td><td>" + lead + "</td></tr>";
+    });
+    document.querySelector("#ep-tbl tbody").innerHTML = rows.join("");
+  }
+
+  function buildRevisions(log) {
+    var cap = document.getElementById("rev-cap");
+    var wrap = document.getElementById("rev-wrap");
+    if (!log || !log.total) {
+      cap.textContent = "No revisions to already-published observations logged yet.";
+      return;
+    }
+    cap.textContent = log.total.toLocaleString() + " revision event" + (log.total === 1 ? "" : "s") +
+      " logged" + (log.recent.length < log.total ? " · showing the " + log.recent.length + " most recent" : "") + ".";
+    wrap.style.display = "";
+    document.querySelector("#rev-tbl tbody").innerHTML = log.recent.map(function (r) {
+      return "<tr><td>" + (r.observed_at || "").slice(0, 10) + "</td><td>" + (r.series || "") +
+             "</td><td>" + (r.changed || "") + "</td><td>" + ((r.span || []).join(" to ")) +
+             "</td><td>" + (r.max_delta === undefined ? "—" : r.max_delta) + "</td></tr>";
+    }).join("");
+  }
+
+  // ------------------------------------------------------------------
+  // wiring
+  // ------------------------------------------------------------------
+  document.querySelectorAll("[data-range]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll("[data-range]").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true");
+      state.range = b.getAttribute("data-range");
+      renderMain();
+    });
+  });
+  document.querySelectorAll("[data-series]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.show2y = !state.show2y;
+      b.setAttribute("aria-pressed", state.show2y ? "true" : "false");
+      renderMain();
+    });
+  });
+
+  var resizeTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { Object.keys(charts).forEach(function (k) { charts[k].draw(); }); }, 120);
+  });
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    (mq.addEventListener ? mq.addEventListener.bind(mq, "change") : mq.addListener.bind(mq))(renderAll);
+  }
+
+  fetch("/api/data", { cache: "no-cache" })
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (p) {
+      state.p = p;
+      document.getElementById("status").style.display = "none";
+
+      var count = 0, obsTotal = 0, key;
+      for (key in p.series) { count++; obsTotal += p.series[key].obs.length; }
+      var sp = S("us_spread_10y3m");
+      document.getElementById("stamp").textContent =
+        count + " series · " + obsTotal.toLocaleString() + " observations · newest daily point " +
+        (sp ? sp.as_of : "—") + " · refreshed " + (p.series_fetched_at || "").slice(0, 10) +
+        " · built __BUILD_TIME__";
+
+      fillTokens(buildTokens(p));
+      buildChip(p);
+      buildTiles(p);
+      buildEpisodes(p);
+      buildRevisions(p.changelog);
+      renderAll();
+    })
+    .catch(function (e) {
+      document.getElementById("status").textContent = "Could not load the data (" + e.message + "). The updater may be briefly unavailable; try a reload in a minute.";
+    });
+})();
+</script>
+</body>
+</html>

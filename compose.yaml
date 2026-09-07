@@ -1,0 +1,54 @@
+networks:
+  web:
+    external: true
+    name: homelab-web
+
+services:
+  yield:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_TIME: ${BUILD_TIME:-unknown}
+    container_name: yield
+    restart: unless-stopped
+    depends_on:
+      - yield-updater
+    networks:
+      - web
+    ports:
+      - "8148:80"
+    volumes:
+      # Read-only here: nginx serves the data layer, the updater owns it.
+      - ./data:/usr/share/nginx/html/data:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/health || exit 1"]
+      interval: 30s
+      # This box runs a lot of containers; a build next door can push a
+      # trivial probe past a short deadline (learned on debt).
+      timeout: 15s
+      retries: 3
+      start_period: 15s
+
+  yield-updater:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: yield-updater
+    restart: unless-stopped
+    user: "1000:1000"
+    networks:
+      - web
+    volumes:
+      - ./data:/app/data
+    environment:
+      - DATA_DIR=/app/data
+      - FRED_API_KEY=${FRED_API_KEY:-}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/api/health || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      # /api/health 503s until the first fetch lands; the warm fetch pulls
+      # eleven series, so give it room before health counts.
+      start_period: 120s

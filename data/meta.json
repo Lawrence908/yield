@@ -1,0 +1,15 @@
+{
+ "series_group": "meta",
+ "built": "2026-09-07",
+ "nyfed_recession_probability": {
+  "value": 15.2,
+  "unit": "percent",
+  "as_of": "2026-07",
+  "horizon": "2027-07",
+  "confidence": "projection",
+  "source": "Federal Reserve Bank of New York, 'The Yield Curve as a Leading Indicator': probability of a US recession twelve months ahead, estimated from the 10-year minus 3-month spread",
+  "source_url": "https://www.newyorkfed.org/research/capital_markets/ycfaq",
+  "last_reviewed": "2026-09-07",
+  "note": "The Fed's probit model reads the July 2026 average spread (+0.78) and assigns the probability of an NBER-dated recession by July 2027. They publish monthly as a legacy .xls workbook; the value is hand-entered here with tools/nyfed-check.py as the ritual, deliberately not scraped, and the page shows staleness once last_reviewed is more than 45 days old."
+ }
+}

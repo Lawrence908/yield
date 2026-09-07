@@ -146,20 +146,10 @@ plus top-level `updated`, `source` (which upstream produced this snapshot), `rev
 from the curated file). `vintage` is `"current"` everywhere in v1; an ALFRED backfill later
 adds sibling snapshots without reshaping anything.
 
-**OPEN DECISION (owner: Chris): where the shared kit lives.** The fetchers
-(`fred keyed → keyless CSV`, Valet, the revision differ, atomic write, changelog append)
-now exist in three near-identical copies across diesel, debt and this plan. Extraction is
-due, this build is the natural moment, and the placement options are:
-
-- `daedalus-infra/templates/econ-kit/` (recommended): `CONTRACT.md`, `serieskit.py`
-  (stdlib only), `recessions.json`. Matches the forge-kit and postgres-app precedent:
-  templates live in infra, apps vendor a pinned copy with a `VENDORED-FROM` header, no pip,
-  no submodules. Retrofitting diesel and debt is a separate later task, not part of this
-  build.
-- Build yield self-contained and extract when `econ` starts: cheapest now, one more copy to
-  reconcile later.
-- A standalone `econ-kit` repo under `/mnt/storage/apps/`: cleanest ownership, one more
-  repo to remember.
+**RESOLVED 2026-09-07: the shared kit is `/mnt/storage/apps/econ-core`**, built by the
+parallel jobs session (CONTRACT.md, `econcore.py`, the shared `recessions.json`,
+`vendor.sh`). yield vendors a stamped copy like every other consumer. The addendum below
+records everything in this plan that the landed contract superseded.
 
 ## Page
 
@@ -230,4 +220,40 @@ prose interpolate from the payload.
   `allmonth.xls`) within rounding across at least three decades.
 - A reader can trace any figure on the page to a source URL in two clicks.
 - `docker ps` shows both containers `(healthy)`, Kuma monitor green, Access bypass live,
-  screenshots committed, repo pushed, `git status` clean with no `.env` and no `data/`.
+  screenshots committed, repo pushed, `git status` clean with no `.env` and no
+  machine-owned data files.
+
+## Addendum, 2026-09-07: alignment with econ-core (written as built)
+
+`econ-core` and `jobs` landed from the parallel session mid-build, and this plan was
+aligned to them rather than the reverse. What changed against the sections above:
+
+1. **Architecture is the jobs shape, not the diesel shape.** Host cron calling
+   `docker exec yield-updater ... --refresh` (one scheduler, visible in `crontab -l`),
+   payload composed from disk and cached on mtime, machine-owned `series.json` rewritten
+   wholesale, curated `meta.json` and vendored `recessions.json` never machine-touched.
+   The in-process wall-clock scheduler described above was diesel's pattern and was not
+   built. Cron runs twice each weekday after the H.15 afternoon posting.
+2. **The fredgraph timeout was a User-Agent tarpit, not a block.** fred.stlouisfed.org
+   answers curl/wget/urllib default UAs instantly and tarpits browser-imitating ones from
+   non-browser TLS stacks. econcore sends the default UA, so the contract's
+   keyless-primary policy stands; the keyed API is the fallback and the vintage route.
+   Treasury XML remains implemented as the truly independent US fallback, engaged only
+   when every FRED route fails and the stored copy is stale.
+3. **Series shapes follow CONTRACT.md**: `obs` as `[date, value]` pairs, snake_case ids
+   (`us_spread_10y3m`, `us_spread_10y3m_monthly`, `ca_spread_10y3m`, ...), computed
+   spreads carry `confidence: estimate` with the construction stated, raw legs ship
+   alongside. Recession bands come from the vendored shared dataset, drawn peak month
+   through trough inclusive.
+4. **The episode table is computed, and the first real run rewrote two assertions in
+   this plan.** On the canonical construction no inversion precedes the 1957 or 1960
+   recessions, so the honest claim is "every recession since 1969", matching the NY
+   Fed's own episode list; and the 2022 episode's monthly series re-inverted through
+   April 2025, making it 27 months long with the attribution window open until 2027.
+   The acceptance line "every recession since 1957" above is superseded by the computed
+   table: 7 credited recessions 1969-2020, median lead 12 months, range 5 to 16, two
+   1966 false positives, one row pending.
+5. **NY Fed values seeded from the workbook** (July 2026 data, 15.2% by July 2027) and
+   the BEY formula verified against their own bond-equivalent column to 4e-15 across 811
+   rows. `tools/nyfed-check.py` is the monthly hand-update ritual and the construction
+   crosscheck; it needs xlrd, so it runs host-side, never in the container.

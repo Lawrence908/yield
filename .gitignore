@@ -1,6 +1,13 @@
 .env
 compose.override.yaml
 *.log
-data/
 __pycache__/
 *.pyc
+
+# NOTE: data/ is deliberately NOT ignored. meta.json is the curated page
+# figures and recessions.json the vendored shared dataset. Machine-owned
+# artefacts are listed individually instead.
+data/*.tmp
+# Rewritten wholesale every run; tracking it would bury every real edit.
+data/series.json
+data/updater-state.json
