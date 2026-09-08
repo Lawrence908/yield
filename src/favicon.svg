@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>yield</title>
+  <rect width="64" height="64" rx="13" fill="#12120f"/>
+  <g fill="none" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M11 27h42" stroke="#f1efe5" stroke-opacity=".8"/>
+  <path d="M13 19c9 0 7 28 19 28s10-21 19-25" stroke="#1baf7a" fill="none"/>
+  </g>
+</svg>
