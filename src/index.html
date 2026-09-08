@@ -667,7 +667,7 @@ tr.open td { font-weight: 650; }
     var firstYear = new Date(x0).getUTCFullYear();
     var lastYear = new Date(x1).getUTCFullYear();
     var years = lastYear - firstYear;
-    var fits = Math.max(2, Math.floor((g.right - g.left) / 46));
+    var fits = Math.max(2, Math.floor((g.right - g.left) / 60));
     var stepY = 1;
     var steps = [1, 2, 5, 10, 20, 25, 50, 100];
     for (var si = 0; si < steps.length; si++) {
