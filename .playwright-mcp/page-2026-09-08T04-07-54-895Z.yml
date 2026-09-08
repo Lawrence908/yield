@@ -1,0 +1,318 @@
+- generic [active] [ref=f9e1]:
+  - generic [ref=f9e2]:
+    - banner [ref=f9e3]:
+      - heading "The Inverted Yield Curve" [level=1] [ref=f9e4]
+      - paragraph [ref=f9e5]: "When the 3-month Treasury out-yields the 10-year, the curve is inverted, and since the late 1960s a US recession has followed within about two years nearly every time. This page keeps score: the spread daily since 1982 and monthly back to 1953, every inversion episode measured against what actually followed, every recession shaded. Nothing here is a forecast; the one probability shown is the New York Fed's, as published."
+      - paragraph [ref=f9e6]:
+        - generic [ref=f9e8]: Not inverted · 10y−3m +0.87 pp on Sep 4, 2026 · positive for 222 trading days
+      - paragraph [ref=f9e9]: 20 series · 159,200 observations · newest daily point 2026-09-04 · refreshed 2026-09-08 · built __BUILD_TIME__
+    - generic [ref=f9e10]:
+      - generic [ref=f9e11]:
+        - generic [ref=f9e12]: US 10y−3m
+        - generic [ref=f9e14]: "+0.87"
+        - generic [ref=f9e15]: Sep 4, 2026 · not inverted
+      - generic [ref=f9e16]:
+        - generic [ref=f9e17]: US 10y−2y
+        - generic [ref=f9e19]: "+0.41"
+        - generic [ref=f9e20]: Sep 4, 2026 · not inverted
+      - generic [ref=f9e21]:
+        - generic [ref=f9e22]: Last inverted day
+        - generic [ref=f9e24]: 323d
+        - generic [ref=f9e25]: ago · Oct 16, 2025
+      - generic [ref=f9e26]:
+        - generic [ref=f9e27]: Median warning
+        - generic [ref=f9e29]: 12 mo
+        - generic [ref=f9e30]: first inversion to NBER peak, 7 recessions
+    - generic [ref=f9e31]:
+      - heading "The spread, daily since 1982" [level=2] [ref=f9e32]
+      - paragraph [ref=f9e33]: "Percentage points: 10-year minus 3-month Treasury constant-maturity yields, as published by the Federal Reserve. Below the zero line, the curve is inverted. Shaded bands are NBER recessions, peak month through trough. The 10y−2y variant is the one headlines quote; research, and the New York Fed, prefer this one."
+      - generic [ref=f9e34]:
+        - group "Time range" [ref=f9e35]:
+          - generic [ref=f9e36]: Range
+          - button "Max" [pressed] [ref=f9e37] [cursor=pointer]
+          - button "20y" [ref=f9e38] [cursor=pointer]
+          - button "10y" [ref=f9e39] [cursor=pointer]
+          - button "5y" [ref=f9e40] [cursor=pointer]
+          - button "1y" [ref=f9e41] [cursor=pointer]
+        - group "Series" [ref=f9e42]:
+          - button "10y−2y" [ref=f9e44] [cursor=pointer]
+      - generic [ref=f9e45]:
+        - generic [ref=f9e46]: 10y−3m, as published
+        - generic [ref=f9e48]: US recessions (NBER)
+    - generic [ref=f9e52]:
+      - heading "Seven decades, monthly" [level=2] [ref=f9e53]
+      - paragraph [ref=f9e54]: "The same spread built monthly from April 1953: the 10-year average yield minus the 3-month bill rate converted from its discount basis to a bond-equivalent yield, which is the New York Fed's own construction (the formula is in the sources below, and both raw legs ship in this page's data). The dotted segment is daily 1962-1981, whose short leg is a different basis again; it is drawn as its own series and never spliced onto the others."
+      - generic [ref=f9e55]:
+        - generic [ref=f9e56]: Monthly from 1953, computed
+        - generic [ref=f9e58]: Daily 1962-81, secondary-market basis (dotted)
+        - generic [ref=f9e60]: US recessions
+    - generic [ref=f9e64]:
+      - heading "Every inversion, scored" [level=2] [ref=f9e65]
+      - paragraph [ref=f9e66]: Computed from the monthly series on every refresh, never hand-maintained. An inversion episode is one or more months of negative monthly-average spread; episodes separated by fewer than six positive months merge into one. An episode is credited with a recession when an NBER peak falls between its first inverted month and 24 months after its last; lead time is measured from the first.
+      - table [ref=f9e68]:
+        - rowgroup [ref=f9e69]:
+          - row [ref=f9e70]:
+            - columnheader "First inverted" [ref=f9e71]
+            - columnheader "Last" [ref=f9e72]
+            - columnheader "Months" [ref=f9e73]
+            - columnheader "Deepest" [ref=f9e74]
+            - columnheader "Recession began" [ref=f9e75]
+            - columnheader "Lead" [ref=f9e76]
+        - rowgroup [ref=f9e77]:
+          - row [ref=f9e78]:
+            - cell "Nov 2022" [ref=f9e79]
+            - cell "Apr 2025" [ref=f9e80]
+            - cell "27" [ref=f9e81]
+            - cell "−1.71 (May 2023)" [ref=f9e82]
+            - cell "none (yet)" [ref=f9e83]
+            - cell "—" [ref=f9e84]
+          - row [ref=f9e85]:
+            - cell "Jun 2019" [ref=f9e86]
+            - cell "Feb 2020" [ref=f9e87]
+            - cell "5" [ref=f9e88]
+            - cell "−0.36 (Aug 2019)" [ref=f9e89]
+            - cell "Feb 2020" [ref=f9e90]
+            - cell "8 mo" [ref=f9e91]
+          - row [ref=f9e92]:
+            - cell "Aug 2006" [ref=f9e93]
+            - cell "May 2007" [ref=f9e94]
+            - cell "10" [ref=f9e95]
+            - cell "−0.51 (Mar 2007)" [ref=f9e96]
+            - cell "Dec 2007" [ref=f9e97]
+            - cell "16 mo" [ref=f9e98]
+          - row [ref=f9e99]:
+            - cell "Jul 2000" [ref=f9e100]
+            - cell "Jan 2001" [ref=f9e101]
+            - cell "7" [ref=f9e102]
+            - cell "−0.70 (Dec 2000)" [ref=f9e103]
+            - cell "Mar 2001" [ref=f9e104]
+            - cell "8 mo" [ref=f9e105]
+          - row [ref=f9e106]:
+            - cell "Jun 1989" [ref=f9e107]
+            - cell "Dec 1989" [ref=f9e108]
+            - cell "5" [ref=f9e109]
+            - cell "−0.16 (Jun 1989)" [ref=f9e110]
+            - cell "Jul 1990" [ref=f9e111]
+            - cell "13 mo" [ref=f9e112]
+          - row [ref=f9e113]:
+            - cell "Nov 1978" [ref=f9e114]
+            - cell "Sep 1981" [ref=f9e115]
+            - cell "30" [ref=f9e116]
+            - cell "−3.51 (Dec 1980)" [ref=f9e117]
+            - cell "Jan 1980 + Jul 1981" [ref=f9e118]
+            - cell "14 mo" [ref=f9e119]
+          - row [ref=f9e120]:
+            - cell "Jun 1973" [ref=f9e121]
+            - cell "Nov 1974" [ref=f9e122]
+            - cell "16" [ref=f9e123]
+            - cell "−1.59 (Aug 1973)" [ref=f9e124]
+            - cell "Nov 1973" [ref=f9e125]
+            - cell "5 mo" [ref=f9e126]
+          - row [ref=f9e127]:
+            - cell "Dec 1968" [ref=f9e128]
+            - cell "Feb 1970" [ref=f9e129]
+            - cell "13" [ref=f9e130]
+            - cell "−0.51 (Aug 1969)" [ref=f9e131]
+            - cell "Dec 1969" [ref=f9e132]
+            - cell "12 mo" [ref=f9e133]
+          - row [ref=f9e134]:
+            - cell "Sep 1966" [ref=f9e135]
+            - cell "Feb 1967" [ref=f9e136]
+            - cell "6" [ref=f9e137]
+            - cell "−0.49 (Oct 1966)" [ref=f9e138]
+            - cell "none within 24 mo" [ref=f9e139]
+            - cell "—" [ref=f9e140]
+          - row [ref=f9e141]:
+            - cell "Jan 1966" [ref=f9e142]
+            - cell "Jan 1966" [ref=f9e143]
+            - cell "1" [ref=f9e144]
+            - cell "−0.10 (Jan 1966)" [ref=f9e145]
+            - cell "none within 24 mo" [ref=f9e146]
+            - cell "—" [ref=f9e147]
+      - generic [ref=f9e148]:
+        - paragraph [ref=f9e149]:
+          - text: Three footnotes the table earns.
+          - strong [ref=f9e150]: "1966"
+          - text: ": the curve inverted twice and no recession came within the window; the false positives stay."
+          - strong [ref=f9e151]: "2019"
+          - text: ": the inversion was followed by the 2020 recession, but that recession arrived with a pandemic, so how much credit the curve deserves is genuinely unknowable."
+          - strong [ref=f9e152]: "2022"
+          - text: ": the newest episode, 27 months inverted with a trough of −1.71 pp, has not been followed by a recession as of the NBER data through Aug 2026; the row stays open rather than being scored either way."
+        - paragraph [ref=f9e153]: "One pattern worth knowing before reading the current re-steepening as relief: in several scored episodes (1990, 2001, 2008) the recession began only after the spread had climbed back above zero. Un-inversion is not an all-clear; in this record it is often the last act before the downturn. The start and end columns above let you check that claim against every row."
+    - generic [ref=f9e154]:
+      - 'heading "The whole curve: which end moved" [level=2] [ref=f9e155]'
+      - paragraph [ref=f9e156]: "One borrower, the United States Treasury, quoted at seven maturities. Normally the curve slopes up: lending for thirty years pays more than lending for three months, because money locked away longer carries more risk and wants compensating. An inverted curve is that ordering reversed, short-term debt yielding more than long-term debt of the same credit quality, which is the market pricing in lower rates later. Inversion is only ever defined against a stated pair, and any two tenors can invert independently. Drawn heavy: the 10-year and the 2-year, the pair the headlines mean. The rest of this page uses 10-year minus 3-month instead, the pair the New York Fed's research is built on. The thin lines fill in the tenors between, which is how you can see whether an episode was the short end rocketing while the long end sat, as in 2022, or both ends chasing inflation upward together, as in the late 1970s."
+      - paragraph [ref=f9e157]: "The band between those two lines is the 10y−2y spread itself, shaded grey while the curve is the right way up and red wherever the 2-year is paying more than the 10-year, which is the inversion, drawn rather than left to be inferred from two lines crossing. Across this many decades a half-point inversion is only a few pixels of shading, so the red strip under the axis marks the same inverted stretches again at a constant height: it is there to answer when, not how long, and the very briefest crossings are drawn a touch wider than they lasted. Click any thin tenor in the legend to bring it up to full weight. Lines start on different dates because the series do: 1962 for the 1, 3, 5 and 10-year, June 1976 for the 2-year, February 1977 for the 30-year, and September 1981 for the 3-month, which is exactly why the published daily 10y−3m spread starts in 1982."
+      - group "Range" [ref=f9e159]:
+        - button "Max" [pressed] [ref=f9e161] [cursor=pointer]
+        - button "30y" [ref=f9e162] [cursor=pointer]
+        - button "20y" [ref=f9e163] [cursor=pointer]
+        - button "10y" [ref=f9e164] [cursor=pointer]
+        - button "5y" [ref=f9e165] [cursor=pointer]
+        - button "2y" [ref=f9e166] [cursor=pointer]
+      - generic [ref=f9e167]:
+        - generic [ref=f9e168]: 10-year
+        - generic [ref=f9e170]: 2-year
+        - button "3-month" [ref=f9e172] [cursor=pointer]
+        - button "1-year" [ref=f9e174] [cursor=pointer]
+        - button "3-year" [ref=f9e176] [cursor=pointer]
+        - button "5-year" [ref=f9e178] [cursor=pointer]
+        - button "30-year" [ref=f9e180] [cursor=pointer]
+        - generic [ref=f9e182]: 10y−2y inverted
+        - generic [ref=f9e184]: US recessions
+    - generic [ref=f9e188]:
+      - heading "Canada" [level=2] [ref=f9e189]
+      - paragraph [ref=f9e190]: "The Bank of Canada publishes the legs, not the spread, so the subtraction happens here: 10-year benchmark minus 3-month bill, daily from 2001 because that is the Valet platform's depth, not the bond market's. The dotted monthly series reaches back to 1956 via the OECD, whose short leg is an interbank rate rather than a bill; where the two overlap the gap between them is that basis difference, shown rather than smoothed over. Shading is the C.D. Howe Business Cycle Council chronology."
+      - generic [ref=f9e191]:
+        - generic [ref=f9e192]: Daily from 2001, benchmark − bill
+        - generic [ref=f9e194]: Monthly from 1956, OECD interbank basis (dotted)
+        - generic [ref=f9e196]: Canadian recessions (C.D. Howe)
+    - generic [ref=f9e200]:
+      - heading "The New York Fed's probability" [level=2] [ref=f9e201]
+      - paragraph [ref=f9e202]: The one forecast on this page, and it is not ours.
+      - generic [ref=f9e203]:
+        - paragraph [ref=f9e204]:
+          - text: "The New York Fed reads this same monthly spread through a probit model and publishes the probability of a US recession within twelve months. Their latest:"
+          - generic [ref=f9e205]: 15.2%
+          - text: by Jul 2027, estimated from Jul 2026 data. Details and history at
+          - link "their FAQ" [ref=f9e206] [cursor=pointer]:
+            - /url: https://www.newyorkfed.org/research/capital_markets/ycfaq
+          - text: .
+        - paragraph [ref=f9e207]: "They publish it as a legacy spreadsheet, so the value is entered here by hand and dated: last checked 2026-09-07. A number that looks fresh because a script touched a file would be worse than one that is honestly dated. This page computes no probabilities of its own."
+    - generic [ref=f9e208]:
+      - heading "Revisions to published history" [level=2] [ref=f9e209]
+      - paragraph [ref=f9e210]: No revisions to already-published observations logged yet.
+      - paragraph [ref=f9e211]: "Treasury constant-maturity yields are near-final the day they are published, unlike the labour and survey data elsewhere in this collection, so this log is expected to stay short. That makes it more interesting, not less: an entry here means Treasury or the Bank of Canada restated a number this page had already shown. Every refresh is diffed against the one before it; new observations are not revisions and are not listed."
+    - generic [ref=f9e212]:
+      - heading "Sources and construction" [level=2] [ref=f9e213]
+      - generic [ref=f9e214]:
+        - paragraph [ref=f9e215]: "The core series is published, not computed here:"
+        - generic [ref=f9e216]: spread (pp) = 10-year constant-maturity yield − 3-month constant-maturity yield
+        - paragraph [ref=f9e217]:
+          - text: Where this page does compute (the monthly and pre-1982 spreads), the 3-month bill's discount-basis rate is first converted to a bond-equivalent yield, the New York Fed's construction, with
+          - code [ref=f9e218]: d
+          - text: "the discount rate as a decimal:"
+        - generic [ref=f9e219]: BEY = 365 d / (360 − 91 d)
+        - heading "United States" [level=3] [ref=f9e220]
+        - list [ref=f9e221]:
+          - listitem [ref=f9e222]:
+            - strong [ref=f9e223]: Daily spreads, as published
+            - text: ": FRED"
+            - link "T10Y3M" [ref=f9e224] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/T10Y3M
+            - text: (from 1982-01-04) and
+            - link "T10Y2Y" [ref=f9e225] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/T10Y2Y
+            - text: "(from 1976-06-01), both from Federal Reserve H.15 constant-maturity yields. Legs:"
+            - link "DGS10" [ref=f9e226] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/DGS10
+            - text: (daily from 1962) and
+            - link "DGS3MO" [ref=f9e227] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/DGS3MO
+            - text: (daily from September 1981).
+          - listitem [ref=f9e228]:
+            - strong [ref=f9e229]: Monthly to 1953
+            - text: ":"
+            - link "GS10" [ref=f9e230] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/GS10
+            - text: minus BEY(
+            - link "TB3MS" [ref=f9e231] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/TB3MS
+            - text: ), computed here, both raw legs shipped alongside so the arithmetic is checkable. The construction was verified against the spread column of the NY Fed's own
+            - link "workbook" [ref=f9e232] [cursor=pointer]:
+              - /url: https://www.newyorkfed.org/medialibrary/media/research/capital_markets/allmonth.xls
+            - text: across their 1959-onward sample.
+          - listitem [ref=f9e233]:
+            - strong [ref=f9e234]: Daily 1962-1981 segment
+            - text: ": DGS10 minus BEY("
+            - link "DTB3" [ref=f9e235] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/DTB3
+            - text: ), the secondary-market bill rate, a different basis from the constant-maturity spread. Its own labelled series; nothing on this page is spliced.
+          - listitem [ref=f9e236]:
+            - strong [ref=f9e237]: Curve tenors
+            - text: ": the seven-line chart adds"
+            - link "DGS30" [ref=f9e238] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/DGS30
+            - text: (daily from 1977-02-15),
+            - link "DGS5" [ref=f9e239] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/DGS5
+            - text: ","
+            - link "DGS3" [ref=f9e240] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/DGS3
+            - text: and
+            - link "DGS1" [ref=f9e241] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/DGS1
+            - text: (all daily from 1962-01-02), and
+            - link "DGS2" [ref=f9e242] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/DGS2
+            - text: "(daily from 1976-06-01), all Federal Reserve H.15 constant maturities on the same bond-equivalent basis as the legs above. DGS2 also gives T10Y2Y its own checkable legs. One caveat worth stating: Treasury suspended the 30-year bond between February 2002 and February 2006, and the values FRED carries across that window come from the Treasury's long-term extrapolation factor rather than an auctioned 30-year, so that stretch of the 30-year line is a different construction from the rest of it."
+          - listitem [ref=f9e243]:
+            - strong [ref=f9e244]: Recession bands
+            - text: ": NBER dates via"
+            - link "USREC" [ref=f9e245] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/USREC
+            - text: ", 35 recessions since 1854 in the shared dataset, drawn peak month through trough."
+        - heading "Canada" [level=3] [ref=f9e246]
+        - list [ref=f9e247]:
+          - listitem [ref=f9e248]:
+            - strong [ref=f9e249]: Daily from 2001
+            - text: ": Bank of Canada Valet, keyless, series"
+            - link "BD.CDN.10YR.DQ.YLD" [ref=f9e250] [cursor=pointer]:
+              - /url: https://www.bankofcanada.ca/valet/series/BD.CDN.10YR.DQ.YLD
+            - text: minus
+            - link "TB.CDN.90D.MID" [ref=f9e251] [cursor=pointer]:
+              - /url: https://www.bankofcanada.ca/valet/series/TB.CDN.90D.MID
+            - text: .
+          - listitem [ref=f9e252]:
+            - strong [ref=f9e253]: Monthly from 1956
+            - text: ": OECD Main Economic Indicators via FRED,"
+            - link "IRLTLT01CAM156N" [ref=f9e254] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/IRLTLT01CAM156N
+            - text: minus
+            - link "IR3TIB01CAM156N" [ref=f9e255] [cursor=pointer]:
+              - /url: https://fred.stlouisfed.org/series/IR3TIB01CAM156N
+            - text: . The short leg is an interbank rate, not a bill; stated wherever it is drawn.
+          - listitem [ref=f9e256]:
+            - strong [ref=f9e257]: Recession bands
+            - text: ":"
+            - link "C.D. Howe Institute Business Cycle Council" [ref=f9e258] [cursor=pointer]:
+              - /url: https://www.cdhowe.org/wp-content/uploads/2024/12/Commentary_366_0-2.pdf
+            - text: chronology (Commentary 366, Table 1), COVID-19 dated by the Council's
+            - link "2021 declaration" [ref=f9e259] [cursor=pointer]:
+              - /url: https://cdhowe.org/council-reports/cd-howe-institute-business-cycle-council-declares-end-Covid-19-recession
+            - text: . No API exists; the dates are curated with citations.
+        - heading "Plumbing" [level=3] [ref=f9e260]
+        - list [ref=f9e261]:
+          - listitem [ref=f9e262]:
+            - text: FRED is fetched keyless-first (the public CSV endpoint), keyed API as fallback; Valet has no keys at all. If FRED went dark entirely, the US daily legs would rebuild from the
+            - link "Treasury's own par yield curve XML" [ref=f9e263] [cursor=pointer]:
+              - /url: https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve
+            - text: (1990 onward) and the page would say so.
+          - listitem [ref=f9e264]: Refreshes twice each weekday via cron, after the H.15 afternoon posting; the stamp above says when data last moved. Yields are near-final at publication, so most runs verify rather than change.
+          - listitem [ref=f9e265]:
+            - text: Series follow the shared
+            - code [ref=f9e266]: econ-core
+            - text: contract (id, provenance, units, frequency, confidence, observations, splices) used across
+            - link "jobs" [ref=f9e267] [cursor=pointer]:
+              - /url: https://jobs.chrislawrence.ca
+            - text: ","
+            - link "debt" [ref=f9e268] [cursor=pointer]:
+              - /url: https://debt.chrislawrence.ca
+            - text: and
+            - link "diesel" [ref=f9e269] [cursor=pointer]:
+              - /url: https://diesel.chrislawrence.ca
+            - text: ", with a vintages field reserved for as-published (ALFRED) views: designed in now, populated later."
+          - listitem [ref=f9e270]:
+            - text: "Raw data:"
+            - link "/api/data" [ref=f9e271] [cursor=pointer]:
+              - /url: /api/data
+            - text: ", or the files under"
+            - link /data/ [ref=f9e272] [cursor=pointer]:
+              - /url: /data/series.json
+            - text: .
+          - listitem [ref=f9e273]: Assembled with Claude (Anthropic). Sources above are the record; this page adds arithmetic and honesty about it, not opinions.
+  - contentinfo [ref=f9e274]:
+    - link "Back to chrislawrence.ca" [ref=f9e275] [cursor=pointer]:
+      - /url: https://chrislawrence.ca
+      - img "Chris Lawrence" [ref=f9e276]
+      - text: Back to chrislawrence.ca

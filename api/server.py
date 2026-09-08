@@ -149,6 +149,51 @@ FETCHED = [
         "note": "Constant maturity, daily since 1981-09-01, which is why the published daily spread starts in 1982.",
     },
     {
+        "id": "us_30y",
+        "fetch": _fred("DGS30"),
+        "label": "US 30-year Treasury yield",
+        "source": "Federal Reserve H.15, via FRED DGS30",
+        "source_url": "https://fred.stlouisfed.org/series/DGS30",
+        "units": "percent", "freq": "daily",
+        "note": "Constant maturity, daily since 1977-02-15. Treasury stopped issuing the 30-year in February 2002 and resumed in February 2006; the current FRED vintage carries values through that window, built from the Treasury's long-term extrapolation factor rather than an auctioned 30-year bond. Context tenor on the curve chart, not a leg of any spread computed here.",
+    },
+    {
+        "id": "us_5y",
+        "fetch": _fred("DGS5"),
+        "label": "US 5-year Treasury yield",
+        "source": "Federal Reserve H.15, via FRED DGS5",
+        "source_url": "https://fred.stlouisfed.org/series/DGS5",
+        "units": "percent", "freq": "daily",
+        "note": "Constant maturity, daily since 1962-01-02. Context tenor on the curve chart.",
+    },
+    {
+        "id": "us_3y",
+        "fetch": _fred("DGS3"),
+        "label": "US 3-year Treasury yield",
+        "source": "Federal Reserve H.15, via FRED DGS3",
+        "source_url": "https://fred.stlouisfed.org/series/DGS3",
+        "units": "percent", "freq": "daily",
+        "note": "Constant maturity, daily since 1962-01-02. Context tenor on the curve chart.",
+    },
+    {
+        "id": "us_2y",
+        "fetch": _fred("DGS2"),
+        "label": "US 2-year Treasury yield",
+        "source": "Federal Reserve H.15, via FRED DGS2",
+        "source_url": "https://fred.stlouisfed.org/series/DGS2",
+        "units": "percent", "freq": "daily",
+        "note": "Constant maturity, daily since 1976-06-01. The short leg of the 10y-2y spread published as T10Y2Y, shipped so that spread's arithmetic is checkable against its own legs.",
+    },
+    {
+        "id": "us_1y",
+        "fetch": _fred("DGS1"),
+        "label": "US 1-year Treasury yield",
+        "source": "Federal Reserve H.15, via FRED DGS1",
+        "source_url": "https://fred.stlouisfed.org/series/DGS1",
+        "units": "percent", "freq": "daily",
+        "note": "Constant maturity, daily since 1962-01-02. Context tenor on the curve chart.",
+    },
+    {
         "id": "us_10y_monthly",
         "fetch": _fred("GS10"),
         "label": "US 10-year yield, monthly",
@@ -460,11 +505,61 @@ def build_episodes(monthly_entry, recessions):
     return {"rule": EPISODE_RULE, "episodes": episodes, "stats": stats}
 
 
-def build_analysis(series):
-    analysis = {"status": {}}
+MONTH_WORDS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+CHIP_RULE = ("The curve is inverted when the 10-year yield sits below the "
+             "3-month yield, so the spread is negative.")
+
+
+def _day_word(iso):
+    parts = iso.split("-")
+    return "%s %d, %s" % (MONTH_WORDS[int(parts[1]) - 1], int(parts[2]), parts[0])
+
+
+def _signed(value, places=2):
+    """The page's sign convention: U+2212 for negatives, never a hyphen."""
+    sign = "+" if value > 0 else ("−" if value < 0 else "")
+    return "%s%.*f" % (sign, places, abs(value))
+
+
+def _headline(status):
+    """The one-line state, keyed on 10y−3m: the spread with the record."""
+    spread = status.get("us_spread_10y3m")
+    if not spread:
+        return None
+    inverted = bool(spread["inverted"])
+    if inverted:
+        detail = "%s pp · %d trading days and counting" % (
+            _signed(spread["latest"][1]), spread["streak_obs"])
+    else:
+        detail = "%s pp on %s" % (_signed(spread["latest"][1]),
+                                  _day_word(spread["latest"][0]))
+        if spread.get("last_negative"):
+            detail += " · positive for %d trading days" % spread["streak_obs"]
+    return {
+        "state": "signal" if inverted else "normal",
+        "label": "Inverted" if inverted else "Not inverted",
+        "detail": "10y−3m " + detail,
+        "as_of": spread["latest"][0],
+        "rule": CHIP_RULE,
+    }
+
+
+def build_status(series):
+    status = {}
     for sid in ("us_spread_10y3m", "us_spread_10y2y", "ca_spread_10y3m"):
         if sid in series:
-            analysis["status"][sid] = _spread_status(series[sid])
+            status[sid] = _spread_status(series[sid])
+    head = _headline(status)
+    if head:
+        status["headline"] = head
+        status["signal_active"] = head["state"] == "signal"
+    return status
+
+
+def build_analysis(series):
+    analysis = {"status": build_status(series)}
     monthly = series.get("us_spread_10y3m_monthly")
     if monthly:
         try:
@@ -665,7 +760,14 @@ def build_data_payload():
     try:
         doc = _load("series.json")
         payload["series"] = doc.get("series", {})
-        payload["analysis"] = doc.get("analysis", {})
+        # The stored block is written by the refresh, which runs out of
+        # process; one written before the status contract existed has no
+        # headline, and the chip would stay hidden until the next scheduled
+        # run. Recomputing the cheap half here makes a deploy take effect now.
+        analysis = dict(doc.get("analysis", {}))
+        if "headline" not in (analysis.get("status") or {}):
+            analysis["status"] = build_status(payload["series"])
+        payload["analysis"] = analysis
         payload["series_fetched_at"] = doc.get("fetched_at")
         payload["series_errors"] = doc.get("errors", {})
     except Exception as exc:  # noqa: BLE001 - charts degrade, page renders
@@ -700,11 +802,19 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 doc = _load("series.json")
                 spread = doc.get("series", {}).get("us_spread_10y3m", {})
-                status = doc.get("analysis", {}).get("status", {}).get("us_spread_10y3m", {})
+                st = doc.get("analysis", {}).get("status", {})
+                # A stored block written before the status contract existed
+                # has no headline; recompute so health and /api/data agree
+                # rather than the hub seeing one and the page the other.
+                if "headline" not in st:
+                    st = build_status(doc.get("series", {}))
+                status = st.get("us_spread_10y3m", {})
                 self._send(200, {
                     "status": "ok",
                     "series": len(doc.get("series", {})),
                     "latest": spread.get("as_of"),
+                    "headline": st.get("headline"),
+                    "signal_active": st.get("signal_active"),
                     "inverted": status.get("inverted"),
                     "errors": len(doc.get("errors", {})),
                     "fetched_at": doc.get("fetched_at"),

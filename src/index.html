@@ -21,6 +21,19 @@
   --series-2: #eb6834;
   --series-3: #1baf7a;
   --series-4: #4a3aa7;
+  /* Ordinal tenor ramp, short to long. Validated light->dark, monotone
+     lightness, adjacent gaps >= 0.06, light end 2.03:1 on this surface. */
+  --tenor-3m: #6cc4a5;
+  --tenor-1y: #3aac86;
+  --tenor-3y: #1c8f6b;
+  --tenor-5y: #0f7052;
+  --tenor-30y: #08503a;
+  /* Sign-coded fill between the 10-year and the 2-year. Deliberately not blue:
+     blue is already the recession band, and a second blue fill would read as
+     one. Red is the status-critical step, used here for the one state the
+     whole page is about. */
+  --gap-normal: #8a8880;
+  --gap-inverted: #d03b3b;
   --tooltip-bg: rgba(252,252,251,0.97);
   --warn: #b3541e;
   --band-alpha: 0.09;
@@ -40,6 +53,13 @@
     --series-2: #d95926;
     --series-3: #199e70;
     --series-4: #9085e9;
+    --tenor-3m: #0d6e50;
+    --tenor-1y: #128a64;
+    --tenor-3y: #1ba97b;
+    --tenor-5y: #4cc39c;
+    --tenor-30y: #86d9bd;
+    --gap-normal: #6f6d66;
+    --gap-inverted: #e05a5a;
     --tooltip-bg: rgba(26,26,25,0.97);
     --warn: #e08a4f;
     --band-alpha: 0.13;
@@ -59,6 +79,14 @@
   --series-2: #d95926;
   --series-3: #199e70;
   --series-4: #9085e9;
+  /* Dark inverts the ramp: longer maturity stays the higher-contrast end. */
+  --tenor-3m: #0d6e50;
+  --tenor-1y: #128a64;
+  --tenor-3y: #1ba97b;
+  --tenor-5y: #4cc39c;
+  --tenor-30y: #86d9bd;
+  --gap-normal: #6f6d66;
+  --gap-inverted: #e05a5a;
   --tooltip-bg: rgba(26,26,25,0.97);
   --warn: #e08a4f;
   --band-alpha: 0.13;
@@ -112,10 +140,20 @@ button.seg:hover { background: var(--grid); }
 button.seg[aria-pressed="true"] { background: var(--text-primary); color: var(--surface-1); border-color: var(--text-primary); }
 
 .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 8px; font-size: 0.85rem; color: var(--text-secondary); }
-.legend span.item { display: flex; align-items: center; gap: 7px; }
+.legend .item { display: flex; align-items: center; gap: 7px; }
 .legend .swatch { width: 14px; height: 3px; border-radius: 2px; }
+.legend .swatch.thin { height: 2px; }
+.legend button.item {
+  font: inherit; color: inherit; background: none; border: 0; padding: 0;
+  cursor: pointer; border-bottom: 1px dotted var(--border);
+}
+.legend button.item:hover { color: var(--text-primary); }
+.legend button.item[aria-pressed="true"] { color: var(--text-primary); font-weight: 600; border-bottom-color: transparent; }
+.legend button.item[aria-pressed="true"] .swatch { height: 3px; }
+.legend button.item:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; border-radius: 2px; }
 .legend .swatch.dashed { background: none !important; border-top: 3px dashed; width: 14px; height: 0; border-radius: 0; }
 .legend .swatch.band { width: 14px; height: 10px; border: 1px solid var(--border); }
+.legend .swatch.rug { width: 14px; height: 6px; border-radius: 1px; }
 
 .plot { position: relative; width: 100%; }
 canvas { display: block; width: 100%; touch-action: pan-y; }
@@ -215,8 +253,20 @@ tr.open td { font-weight: 650; }
   </section>
 
   <section class="card">
-    <h2>The legs: which end moved</h2>
-    <p class="cap">The spread is just the gap between these two lines, but inversions differ by which leg does the moving. 2022 was the short end rocketing while the long end sat; the late-1970s episodes were both ends chasing inflation upward. The 3-month constant-maturity series begins in September 1981, which is exactly why the published daily spread starts in 1982; the 10-year reaches back to 1962.</p>
+    <h2>The whole curve: which end moved</h2>
+    <p class="cap">One borrower, the United States Treasury, quoted at seven maturities. Normally the curve slopes up: lending for thirty years pays more than lending for three months, because money locked away longer carries more risk and wants compensating. An <b>inverted</b> curve is that ordering reversed, short-term debt yielding more than long-term debt of the same credit quality, which is the market pricing in lower rates later. Inversion is only ever defined against a stated pair, and any two tenors can invert independently. Drawn heavy: the 10-year and the 2-year, the pair the headlines mean. The rest of this page uses 10-year minus 3-month instead, the pair the New York Fed's research is built on. The thin lines fill in the tenors between, which is how you can see whether an episode was the short end rocketing while the long end sat, as in 2022, or both ends chasing inflation upward together, as in the late 1970s.</p>
+    <p class="cap" style="margin-top:-6px">The band between those two lines is the 10y&minus;2y spread itself, shaded grey while the curve is the right way up and <b style="color:var(--gap-inverted)">red wherever the 2-year is paying more than the 10-year</b>, which is the inversion, drawn rather than left to be inferred from two lines crossing. Across this many decades a half-point inversion is only a few pixels of shading, so the red strip under the axis marks the same inverted stretches again at a constant height: it is there to answer when, not how long, and the very briefest crossings are drawn a touch wider than they lasted. Click any thin tenor in the legend to bring it up to full weight. Lines start on different dates because the series do: 1962 for the 1, 3, 5 and 10-year, June 1976 for the 2-year, February 1977 for the 30-year, and September 1981 for the 3-month, which is exactly why the published daily 10y&minus;3m spread starts in 1982.</p>
+    <div class="controls">
+      <div class="group" role="group" aria-label="Range">
+        <span class="glabel">Range</span>
+        <button class="seg" data-crange="max" aria-pressed="true">Max</button>
+        <button class="seg" data-crange="30">30y</button>
+        <button class="seg" data-crange="20">20y</button>
+        <button class="seg" data-crange="10">10y</button>
+        <button class="seg" data-crange="5">5y</button>
+        <button class="seg" data-crange="2">2y</button>
+      </div>
+    </div>
     <div class="legend" id="legend-legs"></div>
     <div class="plot"><canvas id="c-legs" height="320"></canvas><div class="tooltip" id="t-legs"></div></div>
   </section>
@@ -259,6 +309,7 @@ tr.open td { font-weight: 650; }
         <li><strong>Daily spreads, as published</strong>: FRED <a href="https://fred.stlouisfed.org/series/T10Y3M">T10Y3M</a> (from 1982-01-04) and <a href="https://fred.stlouisfed.org/series/T10Y2Y">T10Y2Y</a> (from 1976-06-01), both from Federal Reserve H.15 constant-maturity yields. Legs: <a href="https://fred.stlouisfed.org/series/DGS10">DGS10</a> (daily from 1962) and <a href="https://fred.stlouisfed.org/series/DGS3MO">DGS3MO</a> (daily from September 1981).</li>
         <li><strong>Monthly to 1953</strong>: <a href="https://fred.stlouisfed.org/series/GS10">GS10</a> minus BEY(<a href="https://fred.stlouisfed.org/series/TB3MS">TB3MS</a>), computed here, both raw legs shipped alongside so the arithmetic is checkable. The construction was verified against the spread column of the NY Fed's own <a href="https://www.newyorkfed.org/medialibrary/media/research/capital_markets/allmonth.xls">workbook</a> across their 1959-onward sample.</li>
         <li><strong>Daily 1962-1981 segment</strong>: DGS10 minus BEY(<a href="https://fred.stlouisfed.org/series/DTB3">DTB3</a>), the secondary-market bill rate, a different basis from the constant-maturity spread. Its own labelled series; nothing on this page is spliced.</li>
+        <li><strong>Curve tenors</strong>: the seven-line chart adds <a href="https://fred.stlouisfed.org/series/DGS30">DGS30</a> (daily from 1977-02-15), <a href="https://fred.stlouisfed.org/series/DGS5">DGS5</a>, <a href="https://fred.stlouisfed.org/series/DGS3">DGS3</a> and <a href="https://fred.stlouisfed.org/series/DGS1">DGS1</a> (all daily from 1962-01-02), and <a href="https://fred.stlouisfed.org/series/DGS2">DGS2</a> (daily from 1976-06-01), all Federal Reserve H.15 constant maturities on the same bond-equivalent basis as the legs above. DGS2 also gives T10Y2Y its own checkable legs. One caveat worth stating: Treasury suspended the 30-year bond between February 2002 and February 2006, and the values FRED carries across that window come from the Treasury's long-term extrapolation factor rather than an auctioned 30-year, so that stretch of the 30-year line is a different construction from the rest of it.</li>
         <li><strong>Recession bands</strong>: NBER dates via <a href="https://fred.stlouisfed.org/series/USREC">USREC</a>, <span data-tok="usrec_count">…</span> recessions since 1854 in the shared dataset, drawn peak month through trough.</li>
       </ul>
       <h3>Canada</h3>
@@ -293,7 +344,7 @@ tr.open td { font-weight: 650; }
 
   var YEAR = 365.25 * 86400000;
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  var state = { p: null, range: "max", show2y: false };
+  var state = { p: null, range: "max", curveRange: "max", show2y: false, promoted: {} };
 
   function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   function rgba(hex, a) {
@@ -339,11 +390,38 @@ tr.open td { font-weight: 650; }
     this.canvas.addEventListener("touchcancel", function () { self.clearHover(); });
   }
 
-  TimeChart.prototype.clearHover = function () { this.hover = null; this.tip.style.opacity = 0; this.draw(); };
+  TimeChart.prototype.clearHover = function () {
+    this.hover = null;
+    this.tip.style.opacity = 0;
+    if (this.pending) { cancelAnimationFrame(this.pending); this.pending = null; }
+    this.draw();
+  };
 
-  TimeChart.prototype.setData = function (series, bands) {
+  // Pairs two series on their shared dates. Treasury constant maturities share
+  // a business-day calendar, so this is a near-total join, but an unmatched
+  // date is dropped rather than carried forward: a filled gap should never be
+  // wider than the days both legs were actually quoted.
+  function alignPairs(a, b) {
+    var i = 0, j = 0, out = [];
+    while (i < a.length && j < b.length) {
+      if (a[i][0] < b[j][0]) i++;
+      else if (a[i][0] > b[j][0]) j++;
+      else {
+        if (a[i][1] !== null && b[j][1] !== null && isFinite(a[i][1]) && isFinite(b[j][1])) {
+          out.push([a[i][0], a[i][1], b[j][1]]);
+        }
+        i++; j++;
+      }
+    }
+    return out;
+  }
+
+  TimeChart.prototype.setData = function (series, bands, ribbon) {
     this.series = series.filter(function (s) { return s.points.length; });
     this.bands = bands || [];
+    this.ribbon = ribbon && ribbon.a && ribbon.b
+      ? { pairs: alignPairs(ribbon.a, ribbon.b), pos: ribbon.pos, neg: ribbon.neg, rug: ribbon.rug }
+      : null;
     var union = [];
     this.series.forEach(function (s) {
       s.medGap = medianGap(s.points);
@@ -354,6 +432,38 @@ tr.open td { font-weight: 650; }
     this.hover = null;
     this.draw();
   };
+
+  // Seven daily tenors is over 100k points across a chart about 1000px wide,
+  // roughly sixteen samples per pixel column, and drawing every one of them
+  // made a hover redraw take 54ms. Collapsing each column to its first, min,
+  // max and last preserves the vertical envelope exactly, spikes included, and
+  // takes the redraw to under 4ms. It is not bit-identical: within a column the
+  // samples are re-ordered, which shifts antialiasing on about 1% of pixels and
+  // can swap which of two overlapping lines wins a pixel. Gaps pass through
+  // untouched so a null still lifts the pen.
+  function decimate(points, X) {
+    if (points.length < 2000) return points;
+    var out = [], col = null, b = null;
+    function flush() {
+      if (!b) return;
+      var picks = [b.first, b.min, b.max, b.last].sort(function (p, q) { return p[0] - q[0]; });
+      for (var i = 0; i < picks.length; i++) {
+        if (i === 0 || picks[i] !== picks[i - 1]) out.push(picks[i]);
+      }
+      b = null;
+    }
+    for (var i = 0; i < points.length; i++) {
+      var pt = points[i];
+      if (pt[1] === null || !isFinite(pt[1])) { flush(); col = null; out.push(pt); continue; }
+      var c = Math.round(X(pt[0]));
+      if (c !== col) { flush(); col = c; b = { first: pt, last: pt, min: pt, max: pt }; continue; }
+      b.last = pt;
+      if (pt[1] < b.min[1]) b.min = pt;
+      if (pt[1] > b.max[1]) b.max = pt;
+    }
+    flush();
+    return out;
+  }
 
   function medianGap(points) {
     if (points.length < 2) return YEAR;
@@ -370,16 +480,32 @@ tr.open td { font-weight: 650; }
     return lo;
   }
 
+  // Same search as nearest(), over a flat array of timestamps. The union of
+  // seven daily series is six figures long, so mapping it into [t, v] pairs on
+  // every mousemove, as an earlier version did, allocated more than the redraw
+  // it was feeding.
+  function nearestT(times, t) {
+    var lo = 0, hi = times.length - 1;
+    while (lo < hi) { var mid = (lo + hi) >> 1; if (times[mid] < t) lo = mid + 1; else hi = mid; }
+    if (lo > 0 && Math.abs(times[lo - 1] - t) < Math.abs(times[lo] - t)) lo -= 1;
+    return lo;
+  }
+
   TimeChart.prototype.onMove = function (clientX) {
     if (!this.geom || !this.union || !this.union.length) return;
     var rect = this.canvas.getBoundingClientRect();
     var g = this.geom;
     var t = this.x0 + (clientX - rect.left - g.left) / (g.right - g.left) * (this.x1 - this.x0);
-    var k = nearest(this.union.map(function (v) { return [v, 0]; }), t);
-    var snapped = this.union[Math.max(0, Math.min(this.union.length - 1, k))];
+    var snapped = this.union[nearestT(this.union, t)];
     if (snapped === this.hover) return;
     this.hover = snapped;
-    this.draw();
+    // Mousemove fires far faster than this many points can be redrawn, so the
+    // crosshair is coalesced to one repaint per frame. The tooltip is cheap and
+    // updates immediately, which keeps the readout feeling instant.
+    var self = this;
+    if (!this.pending) {
+      this.pending = requestAnimationFrame(function () { self.pending = null; self.draw(); });
+    }
     this.showTip(snapped, rect);
   };
 
@@ -388,7 +514,12 @@ tr.open td { font-weight: 650; }
     this.series.forEach(function (s) { if (s.medGap < 20 * 86400000) monthly = false; });
     var html = '<div class="tdate">' + new Date(t).toISOString().slice(0, monthly ? 7 : 10) + "</div>";
     var shown = 0;
-    this.series.forEach(function (s) {
+    // Draw order puts the emphasised series on top; the tooltip wants its own
+    // order (maturity, so it reads as a yield curve) when a series declares one.
+    var rows = this.series.slice().sort(function (a, b) {
+      return (a.rank === undefined ? 0 : a.rank) - (b.rank === undefined ? 0 : b.rank);
+    });
+    rows.forEach(function (s) {
       var i = nearest(s.points, t);
       var pt = s.points[i];
       if (Math.abs(pt[0] - t) > s.medGap * 0.75) return;
@@ -409,6 +540,59 @@ tr.open td { font-weight: 650; }
     this.tip.style.top = "14px";
   };
 
+  // The gap between the two emphasised series, filled and coloured by sign, so
+  // an inversion is something you see rather than something you infer from two
+  // lines crossing. Split into runs at the crossing itself, interpolated
+  // between the straddling days, so the colour changes exactly where the sign
+  // does rather than at the nearest sample.
+  TimeChart.prototype.drawRibbon = function (ctx, X, Y, g, rug) {
+    var rb = this.ribbon;
+    if (!rb || rb.pairs.length < 2) return;
+    var pairs = rb.pairs, runs = [], cur = null;
+    for (var i = 0; i < pairs.length; i++) {
+      var p = pairs[i], sign = p[1] >= p[2] ? 1 : -1;
+      if (cur && cur.sign !== sign) {
+        var prev = pairs[i - 1];
+        var d0 = prev[1] - prev[2], d1 = p[1] - p[2];
+        var f = d0 === d1 ? 0 : d0 / (d0 - d1);
+        var tc = prev[0] + (p[0] - prev[0]) * f;
+        var vc = prev[1] + (p[1] - prev[1]) * f;
+        cur.pts.push([tc, vc, vc]);
+        runs.push(cur);
+        cur = { sign: sign, pts: [[tc, vc, vc]] };
+      } else if (!cur) {
+        cur = { sign: sign, pts: [] };
+      }
+      cur.pts.push(p);
+    }
+    if (cur) runs.push(cur);
+    runs.forEach(function (r) {
+      if (r.pts.length < 2) return;
+      ctx.beginPath();
+      ctx.moveTo(X(r.pts[0][0]), Y(r.pts[0][1]));
+      for (var k = 1; k < r.pts.length; k++) ctx.lineTo(X(r.pts[k][0]), Y(r.pts[k][1]));
+      for (var m = r.pts.length - 1; m >= 0; m--) ctx.lineTo(X(r.pts[m][0]), Y(r.pts[m][2]));
+      ctx.closePath();
+      ctx.fillStyle = r.sign < 0 ? rb.neg : rb.pos;
+      ctx.fill();
+    });
+
+    // The rug. Across sixty-four years a half-point inversion is a few pixels
+    // of shading, so 2000 and 2006 read far fainter than 1980 despite being the
+    // same event; this strip gives every inverted stretch the same weight. It
+    // is drawn from the runs above, so it can never disagree with the shading.
+    // A stretch narrower than a pixel is still drawn a pixel wide, which
+    // overstates the very shortest ones: the rug answers when, not how long.
+    if (!rug || !g) return;
+    var y = g.bottom + rug.gap;
+    runs.forEach(function (r) {
+      if (r.sign > 0 || r.pts.length < 2) return;
+      var xa = X(r.pts[0][0]), xb = X(r.pts[r.pts.length - 1][0]);
+      ctx.fillStyle = rb.rug;
+      ctx.fillRect(xa, y, Math.max(1, xb - xa), rug.h);
+    });
+  };
+
   TimeChart.prototype.draw = function () {
     var cv = this.canvas, ctx = cv.getContext("2d");
     var dpr = window.devicePixelRatio || 1;
@@ -419,7 +603,11 @@ tr.open td { font-weight: 650; }
     ctx.clearRect(0, 0, w, h);
     if (!this.series || !this.series.length) return;
 
-    var pad = { l: 46, r: 12, t: 10, b: 26 };
+    // The rug gets its own lane under the axis rather than sitting inside the
+    // plot: at the bottom of the plot it would collide with the data itself
+    // whenever yields are near zero, which is exactly the 2020-21 stretch.
+    var rug = this.ribbon ? { h: 6, gap: 3 } : null;
+    var pad = { l: 46, r: 12, t: 10, b: rug ? 26 + rug.h + rug.gap : 26 };
     var g = { left: pad.l, right: w - pad.r, top: pad.t, bottom: h - pad.b };
     this.geom = g;
 
@@ -481,7 +669,8 @@ tr.open td { font-weight: 650; }
       var px = X(t);
       ctx.strokeStyle = grid; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(Math.round(px) + 0.5, g.top); ctx.lineTo(Math.round(px) + 0.5, g.bottom); ctx.stroke();
-      ctx.fillStyle = muted; ctx.fillText(String(yr), px, g.bottom + 6);
+      ctx.fillStyle = muted;
+      ctx.fillText(String(yr), px, g.bottom + 6 + (rug ? rug.h + rug.gap : 0));
     }
 
     // axis baseline
@@ -491,20 +680,46 @@ tr.open td { font-weight: 650; }
     // series
     ctx.lineJoin = "round"; ctx.lineCap = "round";
     var surface = css("--surface-1");
-    this.series.forEach(function (s) {
-      var color = css(s.color);
-      ctx.strokeStyle = color; ctx.lineWidth = s.width || 2;
-      ctx.setLineDash(s.dash ? [5, 4] : []);
+    function path(s) {
       ctx.beginPath();
       var pen = false;
-      s.points.forEach(function (pt) {
+      decimate(s.points, X).forEach(function (pt) {
         if (pt[1] === null || !isFinite(pt[1])) { pen = false; return; }
         var xx = X(pt[0]), yy = Y(pt[1]);
         if (!pen) { ctx.moveTo(xx, yy); pen = true; } else { ctx.lineTo(xx, yy); }
       });
+    }
+
+    function stroke(s) {
+      ctx.setLineDash(s.dash ? [5, 4] : []);
+      path(s);
+      ctx.strokeStyle = css(s.color); ctx.lineWidth = s.width || 2;
       ctx.stroke();
       ctx.setLineDash([]);
+    }
+
+    // Four passes, and the order is the whole point. Unemphasised lines go down
+    // first. An emphasised line then lays a surface-coloured halo over them, so
+    // it stays readable through the crowd. The ribbon goes over the halo, since
+    // a halo drawn on top would erase the fill exactly where it is thinnest,
+    // which is a narrow inversion, which is the one thing this chart must not
+    // lose. The emphasised lines land last.
+    this.series.forEach(function (s) { if (!s.halo) stroke(s); });
+
+    this.series.forEach(function (s) {
+      if (!s.halo) return;
+      ctx.save();
+      ctx.globalAlpha = 0.75;
+      ctx.setLineDash(s.dash ? [5, 4] : []);
+      path(s);
+      ctx.strokeStyle = surface; ctx.lineWidth = (s.width || 2) + 3.5;
+      ctx.stroke();
+      ctx.restore();
     });
+
+    this.drawRibbon(ctx, X, Y, g, rug);
+
+    this.series.forEach(function (s) { if (s.halo) stroke(s); });
 
     // crosshair + hover markers
     if (this.hover !== null) {
@@ -532,7 +747,11 @@ tr.open td { font-weight: 650; }
   var charts = {
     main: new TimeChart("c-main", "t-main", { includeZero: true, yFmt: ppFmt }),
     deep: new TimeChart("c-deep", "t-deep", { includeZero: true, yFmt: ppFmt }),
-    legs: new TimeChart("c-legs", "t-legs", { includeZero: true, yFmt: function (v) { return Math.round(v * 10) / 10 + "%"; } }),
+    // No includeZero here, unlike the spread charts. Zero is the whole story on
+    // a spread and must stay in frame; on a chart of yield levels it only
+    // matters at max range, where the floor is near zero anyway, and forcing it
+    // would flatten every zoomed view into a band at the top.
+    legs: new TimeChart("c-legs", "t-legs", { yFmt: function (v) { return Math.round(v * 10) / 10 + "%"; } }),
     ca: new TimeChart("c-ca", "t-ca", { includeZero: true, yFmt: ppFmt })
   };
 
@@ -562,14 +781,31 @@ tr.open td { font-weight: 650; }
     return out;
   }
 
-  function legend(elId, items) {
-    document.getElementById(elId).innerHTML = items.map(function (it) {
-      var cls = "swatch" + (it.dash ? " dashed" : "") + (it.band ? " band" : "");
+  function legend(elId, items, onToggle) {
+    var el = document.getElementById(elId);
+    el.innerHTML = items.map(function (it) {
+      var cls = "swatch" + (it.dash ? " dashed" : "") + (it.band ? " band" : "") +
+                (it.rug ? " rug" : "") + (it.thin && !it.on ? " thin" : "");
       var style = it.band
         ? "background:" + rgba(css(it.color), parseFloat(css("--band-alpha")) * 2)
         : (it.dash ? "border-top-color:" + css(it.color) : "background:" + css(it.color));
-      return '<span class="item"><span class="' + cls + '" style="' + style + '"></span>' + it.name + "</span>";
+      var swatch = '<span class="' + cls + '" style="' + style + '"></span>';
+      // A toggleable entry is a real button: it changes what the chart draws,
+      // so it has to be reachable and announced like one.
+      if (it.key) {
+        return '<button type="button" class="item" data-key="' + it.key + '" aria-pressed="' +
+               (it.on ? "true" : "false") + '" title="Click to emphasise the ' + it.name +
+               ' line">' + swatch + it.name + "</button>";
+      }
+      return '<span class="item">' + swatch + it.name + "</span>";
     }).join("");
+    if (onToggle && !el.dataset.wired) {
+      el.dataset.wired = "1";
+      el.addEventListener("click", function (ev) {
+        var btn = ev.target.closest("button.item[data-key]");
+        if (btn) onToggle(btn.getAttribute("data-key"));
+      });
+    }
   }
 
   function cutoffMs() {
@@ -596,6 +832,61 @@ tr.open td { font-weight: 650; }
     legend("legend-main", items);
   }
 
+  // Seven tenors on one axis. The context lines are drawn first so the two the
+  // page actually argues about sit on top of them; any context line the reader
+  // promotes from the legend joins them at full weight.
+  var CONTEXT = [
+    { id: "us_3m", name: "3-month", color: "--tenor-3m", rank: 0.25 },
+    { id: "us_1y", name: "1-year", color: "--tenor-1y", rank: 1 },
+    { id: "us_3y", name: "3-year", color: "--tenor-3y", rank: 3 },
+    { id: "us_5y", name: "5-year", color: "--tenor-5y", rank: 5 },
+    { id: "us_30y", name: "30-year", color: "--tenor-30y", rank: 30 }
+  ];
+
+  function renderCurve() {
+    var y10 = S("us_10y"), y2 = S("us_2y");
+    // The curve chart keeps its own range, independent of the spread chart's:
+    // the two answer different questions and a reader zoomed into one rarely
+    // wants the other to follow.
+    var from = -Infinity;
+    if (state.curveRange !== "max" && y10) {
+      from = ms(y10.as_of) - parseInt(state.curveRange, 10) * YEAR;
+    }
+    var curve = CONTEXT.map(function (t) {
+      var e = S(t.id);
+      if (!e) return null;
+      var on = !!state.promoted[t.id];
+      return {
+        name: t.name, color: t.color, rank: t.rank,
+        width: on ? 2.2 : 1, halo: on, points: clip(pts(e), from), fmt: fmtPct
+      };
+    }).filter(function (s) { return s && s.points.length; });
+    if (y2) curve.push({ name: "2-year", color: "--series-2", rank: 2, width: 2.2, halo: true, points: clip(pts(y2), from), fmt: fmtPct });
+    if (y10) curve.push({ name: "10-year", color: "--series-1", rank: 10, width: 2.2, halo: true, points: clip(pts(y10), from), fmt: fmtPct });
+    charts.legs.setData(
+      curve,
+      bandList(["us"], from === -Infinity && y10 ? pts(y10)[0][0] : from),
+      y10 && y2 ? {
+        a: clip(pts(y10), from), b: clip(pts(y2), from),
+        pos: rgba(css("--gap-normal"), 0.16),
+        neg: rgba(css("--gap-inverted"), 0.55),
+        rug: css("--gap-inverted")
+      } : null
+    );
+    legend("legend-legs", [
+      { name: "10-year", color: "--series-1" },
+      { name: "2-year", color: "--series-2" }
+    ].concat(CONTEXT.map(function (t) {
+      return { name: t.name, color: t.color, thin: true, key: t.id, on: !!state.promoted[t.id] };
+    })).concat([
+      { name: "10y−2y inverted", color: "--gap-inverted", rug: true },
+      { name: "US recessions", color: "--series-1", band: true }
+    ]), function (key) {
+      state.promoted[key] = !state.promoted[key];
+      renderCurve();
+    });
+  }
+
   function renderRest() {
     var mon = S("us_spread_10y3m_monthly"), seg = S("us_spread_10y3m_1962_1981");
     charts.deep.setData([
@@ -608,16 +899,7 @@ tr.open td { font-weight: 650; }
       { name: "US recessions", color: "--series-1", band: true }
     ]);
 
-    var y10 = S("us_10y"), y3 = S("us_3m");
-    charts.legs.setData([
-      y10 && { name: "10-year", color: "--series-1", points: pts(y10), fmt: fmtPct },
-      y3 && { name: "3-month", color: "--series-2", points: pts(y3), fmt: fmtPct }
-    ].filter(Boolean), bandList(["us"], y10 ? pts(y10)[0][0] : -Infinity));
-    legend("legend-legs", [
-      { name: "10-year constant maturity", color: "--series-1" },
-      { name: "3-month constant maturity", color: "--series-2" },
-      { name: "US recessions", color: "--series-1", band: true }
-    ]);
+    renderCurve();
 
     var caD = S("ca_spread_10y3m"), caM = S("ca_spread_10y3m_monthly");
     charts.ca.setData([
@@ -690,17 +972,18 @@ tr.open td { font-weight: 650; }
     return map;
   }
 
+  /* Rendered from analysis.status.headline rather than recomposed here: the
+     server owns the rule and its wording, so the hub and the page cannot
+     drift into saying different things about the same reading. The payload's
+     state is binary; this page shades on the more specific word. */
   function buildChip(p) {
-    var st = p.analysis && p.analysis.status && p.analysis.status.us_spread_10y3m;
+    var head = ((p.analysis || {}).status || {}).headline;
     var chip = document.getElementById("chip");
-    if (!st) return;
-    var word = st.inverted ? "Inverted" : "Not inverted";
-    var detail = st.inverted
-      ? fmtPp(st.latest[1]) + " pp · " + st.streak_obs + " trading days and counting"
-      : fmtPp(st.latest[1]) + " pp on " + dayWord(st.latest[0]) +
-        (st.last_negative ? " · positive for " + st.streak_obs + " trading days" : "");
-    chip.innerHTML = '<span class="dot"></span><span><b>' + word + "</b> · 10y−3m " + detail + "</span>";
-    chip.setAttribute("data-state", st.inverted ? "inverted" : "normal");
+    if (!head) return;
+    chip.innerHTML = '<span class="dot"></span><span><b>' + head.label + "</b> · " +
+                     head.detail + "</span>";
+    chip.setAttribute("data-state", head.state === "signal" ? "inverted" : "normal");
+    chip.title = head.rule;
     chip.hidden = false;
   }
 
@@ -780,6 +1063,14 @@ tr.open td { font-weight: 650; }
       b.setAttribute("aria-pressed", "true");
       state.range = b.getAttribute("data-range");
       renderMain();
+    });
+  });
+  document.querySelectorAll("[data-crange]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll("[data-crange]").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true");
+      state.curveRange = b.getAttribute("data-crange");
+      renderCurve();
     });
   });
   document.querySelectorAll("[data-series]").forEach(function (b) {
