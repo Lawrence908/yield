@@ -11,3 +11,7 @@ data/*.tmp
 # Rewritten wholesale every run; tracking it would bury every real edit.
 data/series.json
 data/updater-state.json
+
+# Playwright MCP scratch output: screenshots and page snapshots taken while
+# checking the rendered page. Working notes, never repo content.
+.playwright-mcp/
