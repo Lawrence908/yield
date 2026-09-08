@@ -89,3 +89,20 @@ they diverge by more than a basis point.
 Assembled with Claude, made by Anthropic. The page reports published spreads, dated
 institutional projections, and computed history with the constructions stated; it
 forecasts nothing.
+
+## Data and attribution
+
+The MIT licence covers this repository's code. It does not cover the data, which is not
+mine: every series belongs to the body that publishes it and carries that body's own terms.
+Each series names its `source` and `source_url` so the original is always one click away.
+
+Yields are published by the Federal Reserve (H.15) and the Bank of Canada
+([Valet terms](https://www.bankofcanada.ca/terms/)); OECD reference rates are
+redistributed through FRED. US federal data is not subject to copyright.
+
+Recession bands come from econ-core: the US from the NBER chronology via FRED `USREC`,
+Canada from the C.D. Howe Institute Business Cycle Council chronology.
+
+Series reached through FRED are redistributed by the Federal Reserve Bank of St. Louis
+under [its terms of use](https://fred.stlouisfed.org/legal/), which ask that you cite the
+original source and note that it was accessed via FRED.
