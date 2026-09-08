@@ -21,8 +21,9 @@
   --series-2: #eb6834;
   --series-3: #1baf7a;
   --series-4: #4a3aa7;
-  /* Ordinal tenor ramp, short to long. Validated light->dark, monotone
-     lightness, adjacent gaps >= 0.06, light end 2.03:1 on this surface. */
+  /* Ordinal tenor ramp, short to long, drawn only behind the All tenors
+     toggle. Validated light->dark: monotone lightness, adjacent gaps >= 0.06,
+     light end 2.03:1 on this surface. */
   --tenor-3m: #6cc4a5;
   --tenor-1y: #3aac86;
   --tenor-3y: #1c8f6b;
@@ -142,18 +143,10 @@ button.seg[aria-pressed="true"] { background: var(--text-primary); color: var(--
 .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 8px; font-size: 0.85rem; color: var(--text-secondary); }
 .legend .item { display: flex; align-items: center; gap: 7px; }
 .legend .swatch { width: 14px; height: 3px; border-radius: 2px; }
-.legend .swatch.thin { height: 2px; }
-.legend button.item {
-  font: inherit; color: inherit; background: none; border: 0; padding: 0;
-  cursor: pointer; border-bottom: 1px dotted var(--border);
-}
-.legend button.item:hover { color: var(--text-primary); }
-.legend button.item[aria-pressed="true"] { color: var(--text-primary); font-weight: 600; border-bottom-color: transparent; }
-.legend button.item[aria-pressed="true"] .swatch { height: 3px; }
-.legend button.item:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; border-radius: 2px; }
 .legend .swatch.dashed { background: none !important; border-top: 3px dashed; width: 14px; height: 0; border-radius: 0; }
 .legend .swatch.band { width: 14px; height: 10px; border: 1px solid var(--border); }
 .legend .swatch.rug { width: 14px; height: 6px; border-radius: 1px; }
+.legend .swatch.thin { height: 2px; }
 
 .plot { position: relative; width: 100%; }
 canvas { display: block; width: 100%; touch-action: pan-y; }
@@ -211,8 +204,8 @@ tr.open td { font-weight: 650; }
   <div class="tiles" id="tiles"></div>
 
   <section class="card">
-    <h2>The spread, daily since 1982</h2>
-    <p class="cap">Percentage points: 10-year minus 3-month Treasury constant-maturity yields, as published by the Federal Reserve. Below the zero line, the curve is inverted. Shaded bands are NBER recessions, peak month through trough. The 10y&minus;2y variant is the one headlines quote; research, and the New York Fed, prefer this one.</p>
+    <h2>The spreads, daily</h2>
+    <p class="cap">Percentage points: 10-year minus 3-month Treasury constant-maturity yields, as published by the Federal Reserve. Below the zero line, the curve is inverted. Shaded bands are NBER recessions, peak month through trough. Both published spreads are drawn: 10y&minus;2y is the one headlines quote, 10y&minus;3m the one research and the New York Fed prefer and the one the rest of this page is built on. They are different measures rather than a measure and a variant, and they invert at different times, so the gap between them is worth seeing rather than being told about. They start on different dates because the published series do: 10y&minus;2y from June 1976, 10y&minus;3m from January 1982, the latter bounded by when the 3-month constant maturity begins. Either can be switched off.</p>
     <div class="controls">
       <div class="group" role="group" aria-label="Time range">
         <span class="glabel">Range</span>
@@ -224,7 +217,7 @@ tr.open td { font-weight: 650; }
       </div>
       <div class="group" role="group" aria-label="Series">
         <span class="glabel">Series</span>
-        <button class="seg" data-series="sp2y" aria-pressed="false">10y&minus;2y</button>
+        <button class="seg" data-series="sp2y" aria-pressed="true">10y&minus;2y</button>
       </div>
     </div>
     <div class="legend" id="legend-main"></div>
@@ -253,18 +246,22 @@ tr.open td { font-weight: 650; }
   </section>
 
   <section class="card">
-    <h2>The whole curve: which end moved</h2>
-    <p class="cap">One borrower, the United States Treasury, quoted at seven maturities. Normally the curve slopes up: lending for thirty years pays more than lending for three months, because money locked away longer carries more risk and wants compensating. An <b>inverted</b> curve is that ordering reversed, short-term debt yielding more than long-term debt of the same credit quality, which is the market pricing in lower rates later. Inversion is only ever defined against a stated pair, and any two tenors can invert independently. Drawn heavy: the 10-year and the 2-year, the pair the headlines mean. The rest of this page uses 10-year minus 3-month instead, the pair the New York Fed's research is built on. The thin lines fill in the tenors between, which is how you can see whether an episode was the short end rocketing while the long end sat, as in 2022, or both ends chasing inflation upward together, as in the late 1970s.</p>
-    <p class="cap" style="margin-top:-6px">The band between those two lines is the 10y&minus;2y spread itself, shaded grey while the curve is the right way up and <b style="color:var(--gap-inverted)">red wherever the 2-year is paying more than the 10-year</b>, which is the inversion, drawn rather than left to be inferred from two lines crossing. Across this many decades a half-point inversion is only a few pixels of shading, so the red strip under the axis marks the same inverted stretches again at a constant height: it is there to answer when, not how long, and the very briefest crossings are drawn a touch wider than they lasted. Click any thin tenor in the legend to bring it up to full weight. Lines start on different dates because the series do: 1962 for the 1, 3, 5 and 10-year, June 1976 for the 2-year, February 1977 for the 30-year, and September 1981 for the 3-month, which is exactly why the published daily 10y&minus;3m spread starts in 1982.</p>
+    <h2>The legs: which end moved</h2>
+    <p class="cap">The chart above gives the 10y&minus;2y spread as one line against zero. This is the same thing taken apart: the two yields themselves, so you can see which leg did the moving. Normally the curve slopes up and the 10-year pays more, because money locked away longer carries more risk and wants compensating. An <b>inverted</b> curve is that ordering reversed, short-term debt yielding more than long-term debt of the same credit quality, which is the market pricing in lower rates later. Inversion is only ever defined against a stated pair; this is the 10-year against the 2-year, the pair the headlines mean.</p>
+    <p class="cap" style="margin-top:-6px">The band between the lines is that spread, shaded grey while the curve is the right way up and <b style="color:var(--gap-inverted)">red wherever the 2-year is paying more than the 10-year</b>, so the inversion is drawn rather than inferred from two lines crossing. The strip under the axis marks the same inverted stretches at a constant height, because at wider ranges a half-point inversion is only a few pixels of shading: it answers when, not how long, and the briefest crossings are drawn a touch wider than they lasted. The 2-year begins in June 1976 and the 10-year in 1962, so Max starts where both are quoted. Reading it: 2022 was the short end rocketing while the long end sat; the late-1970s episodes were both ends chasing inflation upward together. <b>All tenors</b> adds the 3-month, 1, 3, 5 and 30-year as thin lines, shaded short to long, for when the question is where the rest of the curve sat rather than what these two did.</p>
     <div class="controls">
       <div class="group" role="group" aria-label="Range">
         <span class="glabel">Range</span>
-        <button class="seg" data-crange="max" aria-pressed="true">Max</button>
-        <button class="seg" data-crange="30">30y</button>
-        <button class="seg" data-crange="20">20y</button>
-        <button class="seg" data-crange="10">10y</button>
-        <button class="seg" data-crange="5">5y</button>
-        <button class="seg" data-crange="2">2y</button>
+        <button class="seg" data-crange="max" aria-pressed="false">Max</button>
+        <button class="seg" data-crange="30" aria-pressed="false">30y</button>
+        <button class="seg" data-crange="20" aria-pressed="true">20y</button>
+        <button class="seg" data-crange="10" aria-pressed="false">10y</button>
+        <button class="seg" data-crange="3" aria-pressed="false">3y</button>
+        <button class="seg" data-crange="1" aria-pressed="false">1y</button>
+      </div>
+      <div class="group" role="group" aria-label="Tenors">
+        <span class="glabel">Show</span>
+        <button class="seg" id="all-tenors" aria-pressed="false">All tenors</button>
       </div>
     </div>
     <div class="legend" id="legend-legs"></div>
@@ -309,7 +306,8 @@ tr.open td { font-weight: 650; }
         <li><strong>Daily spreads, as published</strong>: FRED <a href="https://fred.stlouisfed.org/series/T10Y3M">T10Y3M</a> (from 1982-01-04) and <a href="https://fred.stlouisfed.org/series/T10Y2Y">T10Y2Y</a> (from 1976-06-01), both from Federal Reserve H.15 constant-maturity yields. Legs: <a href="https://fred.stlouisfed.org/series/DGS10">DGS10</a> (daily from 1962) and <a href="https://fred.stlouisfed.org/series/DGS3MO">DGS3MO</a> (daily from September 1981).</li>
         <li><strong>Monthly to 1953</strong>: <a href="https://fred.stlouisfed.org/series/GS10">GS10</a> minus BEY(<a href="https://fred.stlouisfed.org/series/TB3MS">TB3MS</a>), computed here, both raw legs shipped alongside so the arithmetic is checkable. The construction was verified against the spread column of the NY Fed's own <a href="https://www.newyorkfed.org/medialibrary/media/research/capital_markets/allmonth.xls">workbook</a> across their 1959-onward sample.</li>
         <li><strong>Daily 1962-1981 segment</strong>: DGS10 minus BEY(<a href="https://fred.stlouisfed.org/series/DTB3">DTB3</a>), the secondary-market bill rate, a different basis from the constant-maturity spread. Its own labelled series; nothing on this page is spliced.</li>
-        <li><strong>Curve tenors</strong>: the seven-line chart adds <a href="https://fred.stlouisfed.org/series/DGS30">DGS30</a> (daily from 1977-02-15), <a href="https://fred.stlouisfed.org/series/DGS5">DGS5</a>, <a href="https://fred.stlouisfed.org/series/DGS3">DGS3</a> and <a href="https://fred.stlouisfed.org/series/DGS1">DGS1</a> (all daily from 1962-01-02), and <a href="https://fred.stlouisfed.org/series/DGS2">DGS2</a> (daily from 1976-06-01), all Federal Reserve H.15 constant maturities on the same bond-equivalent basis as the legs above. DGS2 also gives T10Y2Y its own checkable legs. One caveat worth stating: Treasury suspended the 30-year bond between February 2002 and February 2006, and the values FRED carries across that window come from the Treasury's long-term extrapolation factor rather than an auctioned 30-year, so that stretch of the 30-year line is a different construction from the rest of it.</li>
+        <li><strong>The 2-year leg</strong>: <a href="https://fred.stlouisfed.org/series/DGS2">DGS2</a>, Federal Reserve H.15 constant maturity, daily from 1976-06-01, on the same bond-equivalent basis as the legs above. It is the short line on the legs chart and it gives T10Y2Y its own checkable legs, which the published spread otherwise would not have here.</li>
+        <li><strong>The other tenors</strong>, drawn only behind that chart's All tenors toggle: <a href="https://fred.stlouisfed.org/series/DGS30">DGS30</a> (daily from 1977-02-15), plus <a href="https://fred.stlouisfed.org/series/DGS5">DGS5</a>, <a href="https://fred.stlouisfed.org/series/DGS3">DGS3</a> and <a href="https://fred.stlouisfed.org/series/DGS1">DGS1</a> (all daily from 1962-01-02), same H.15 constant-maturity basis. One caveat: Treasury suspended the 30-year bond between February 2002 and February 2006, and the values FRED carries across that window come from the Treasury's long-term extrapolation factor rather than an auctioned 30-year, so that stretch of the 30-year line is a different construction from the rest of it.</li>
         <li><strong>Recession bands</strong>: NBER dates via <a href="https://fred.stlouisfed.org/series/USREC">USREC</a>, <span data-tok="usrec_count">…</span> recessions since 1854 in the shared dataset, drawn peak month through trough.</li>
       </ul>
       <h3>Canada</h3>
@@ -344,7 +342,11 @@ tr.open td { font-weight: 650; }
 
   var YEAR = 365.25 * 86400000;
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  var state = { p: null, range: "max", curveRange: "max", show2y: false, promoted: {} };
+  // The legs chart opens at 20 years, not Max: that is the shortest window
+  // holding a complete, uncontaminated inversion-to-recession cycle (2006-07
+  // inverts, 2008 arrives), and at 64 years a half-point inversion collapses
+  // into a few pixels of shading. Max is a click away.
+  var state = { p: null, range: "max", curveRange: "20", show2y: true, tenors: false };
 
   function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   function rgba(hex, a) {
@@ -698,13 +700,18 @@ tr.open td { font-weight: 650; }
       ctx.setLineDash([]);
     }
 
-    // Four passes, and the order is the whole point. Unemphasised lines go down
-    // first. An emphasised line then lays a surface-coloured halo over them, so
-    // it stays readable through the crowd. The ribbon goes over the halo, since
-    // a halo drawn on top would erase the fill exactly where it is thinnest,
-    // which is a narrow inversion, which is the one thing this chart must not
-    // lose. The emphasised lines land last.
-    this.series.forEach(function (s) { if (!s.halo) stroke(s); });
+    // Four passes, and the order is the whole point. Background lines go down
+    // first. A foreground line may then lay a surface-coloured halo over them
+    // so it stays readable through a crowd. The ribbon goes over the halo,
+    // since a halo drawn on top would erase the fill exactly where it is
+    // thinnest, which is a narrow inversion, which is the one thing this chart
+    // must not lose. Foreground lines land last.
+    //
+    // `top` and `halo` are deliberately separate flags: the ribbon's own two
+    // legs must always draw after the fill, whether or not there is a crowd to
+    // halo against. Folding them into one flag put both legs under the fill
+    // whenever the crowd was hidden.
+    this.series.forEach(function (s) { if (!s.top) stroke(s); });
 
     this.series.forEach(function (s) {
       if (!s.halo) return;
@@ -719,7 +726,7 @@ tr.open td { font-weight: 650; }
 
     this.drawRibbon(ctx, X, Y, g, rug);
 
-    this.series.forEach(function (s) { if (s.halo) stroke(s); });
+    this.series.forEach(function (s) { if (s.top) stroke(s); });
 
     // crosshair + hover markers
     if (this.hover !== null) {
@@ -781,31 +788,15 @@ tr.open td { font-weight: 650; }
     return out;
   }
 
-  function legend(elId, items, onToggle) {
-    var el = document.getElementById(elId);
-    el.innerHTML = items.map(function (it) {
+  function legend(elId, items) {
+    document.getElementById(elId).innerHTML = items.map(function (it) {
       var cls = "swatch" + (it.dash ? " dashed" : "") + (it.band ? " band" : "") +
-                (it.rug ? " rug" : "") + (it.thin && !it.on ? " thin" : "");
+                (it.rug ? " rug" : "") + (it.thin ? " thin" : "");
       var style = it.band
         ? "background:" + rgba(css(it.color), parseFloat(css("--band-alpha")) * 2)
         : (it.dash ? "border-top-color:" + css(it.color) : "background:" + css(it.color));
-      var swatch = '<span class="' + cls + '" style="' + style + '"></span>';
-      // A toggleable entry is a real button: it changes what the chart draws,
-      // so it has to be reachable and announced like one.
-      if (it.key) {
-        return '<button type="button" class="item" data-key="' + it.key + '" aria-pressed="' +
-               (it.on ? "true" : "false") + '" title="Click to emphasise the ' + it.name +
-               ' line">' + swatch + it.name + "</button>";
-      }
-      return '<span class="item">' + swatch + it.name + "</span>";
+      return '<span class="item"><span class="' + cls + '" style="' + style + '"></span>' + it.name + "</span>";
     }).join("");
-    if (onToggle && !el.dataset.wired) {
-      el.dataset.wired = "1";
-      el.addEventListener("click", function (ev) {
-        var btn = ev.target.closest("button.item[data-key]");
-        if (btn) onToggle(btn.getAttribute("data-key"));
-      });
-    }
   }
 
   function cutoffMs() {
@@ -824,17 +815,21 @@ tr.open td { font-weight: 650; }
     var sp3 = S("us_spread_10y3m"), sp2 = S("us_spread_10y2y");
     var series = [];
     if (sp3) series.push({ name: "10y−3m", color: "--series-1", points: clip(pts(sp3), from) });
-    if (state.show2y && sp2) series.push({ name: "10y−2y", color: "--series-4", points: clip(pts(sp2), from) });
+    // Orange, not the violet this used to wear. The 10y-2y line is on by
+    // default now, and against the blue 10y-3m the violet measured ΔE 9.8 in
+    // dark mode, under the legibility floor. Orange also carries the 2-year
+    // everywhere else on the page, so the colour means the same thing twice.
+    if (state.show2y && sp2) series.push({ name: "10y−2y", color: "--series-2", points: clip(pts(sp2), from) });
     charts.main.setData(series, bandList(["us"], from));
     var items = [{ name: "10y−3m, as published", color: "--series-1" }];
-    if (state.show2y) items.push({ name: "10y−2y, as published", color: "--series-4" });
+    if (state.show2y) items.push({ name: "10y−2y, as published", color: "--series-2" });
     items.push({ name: "US recessions (NBER)", color: "--series-1", band: true });
     legend("legend-main", items);
   }
 
-  // Seven tenors on one axis. The context lines are drawn first so the two the
-  // page actually argues about sit on top of them; any context line the reader
-  // promotes from the legend joins them at full weight.
+  // Off by default. The chart's job is the 10-year against the 2-year; these
+  // five answer the follow-up question of where the rest of the curve sat, and
+  // drawing them unasked was what made this chart hard to read.
   var CONTEXT = [
     { id: "us_3m", name: "3-month", color: "--tenor-3m", rank: 0.25 },
     { id: "us_1y", name: "1-year", color: "--tenor-1y", rank: 1 },
@@ -845,46 +840,51 @@ tr.open td { font-weight: 650; }
 
   function renderCurve() {
     var y10 = S("us_10y"), y2 = S("us_2y");
-    // The curve chart keeps its own range, independent of the spread chart's:
-    // the two answer different questions and a reader zoomed into one rarely
-    // wants the other to follow.
-    var from = -Infinity;
-    if (state.curveRange !== "max" && y10) {
-      from = ms(y10.as_of) - parseInt(state.curveRange, 10) * YEAR;
+    if (!y10 || !y2) return;
+    // This chart keeps its own range, independent of the spread chart's: the
+    // two answer different questions and a reader zoomed into one rarely wants
+    // the other to follow. Max starts at the 2-year, since a band needs both
+    // legs and the 10-year alone before June 1976 would be half a chart.
+    var from = state.curveRange === "max"
+      ? pts(y2)[0][0]
+      : ms(y10.as_of) - parseInt(state.curveRange, 10) * YEAR;
+    var a = clip(pts(y10), from), b = clip(pts(y2), from);
+    // Context lines first so the two the chart is about sit on top, and the two
+    // carry halos only when there is a crowd to be read through.
+    var crowd = state.tenors;
+    var series = [];
+    if (crowd) {
+      CONTEXT.forEach(function (t) {
+        var e = S(t.id);
+        if (!e) return;
+        var pp = clip(pts(e), from);
+        if (pp.length) {
+          series.push({ name: t.name, color: t.color, rank: t.rank, width: 1, points: pp, fmt: fmtPct });
+        }
+      });
     }
-    var curve = CONTEXT.map(function (t) {
-      var e = S(t.id);
-      if (!e) return null;
-      var on = !!state.promoted[t.id];
-      return {
-        name: t.name, color: t.color, rank: t.rank,
-        width: on ? 2.2 : 1, halo: on, points: clip(pts(e), from), fmt: fmtPct
-      };
-    }).filter(function (s) { return s && s.points.length; });
-    if (y2) curve.push({ name: "2-year", color: "--series-2", rank: 2, width: 2.2, halo: true, points: clip(pts(y2), from), fmt: fmtPct });
-    if (y10) curve.push({ name: "10-year", color: "--series-1", rank: 10, width: 2.2, halo: true, points: clip(pts(y10), from), fmt: fmtPct });
+    series.push({ name: "2-year", color: "--series-2", rank: 2, width: 2.2, top: true, halo: crowd, points: b, fmt: fmtPct });
+    series.push({ name: "10-year", color: "--series-1", rank: 10, width: 2.2, top: true, halo: crowd, points: a, fmt: fmtPct });
     charts.legs.setData(
-      curve,
-      bandList(["us"], from === -Infinity && y10 ? pts(y10)[0][0] : from),
-      y10 && y2 ? {
-        a: clip(pts(y10), from), b: clip(pts(y2), from),
+      series,
+      bandList(["us"], from),
+      {
+        a: a, b: b,
         pos: rgba(css("--gap-normal"), 0.16),
         neg: rgba(css("--gap-inverted"), 0.55),
         rug: css("--gap-inverted")
-      } : null
+      }
     );
-    legend("legend-legs", [
+    var items = [
       { name: "10-year", color: "--series-1" },
       { name: "2-year", color: "--series-2" }
-    ].concat(CONTEXT.map(function (t) {
-      return { name: t.name, color: t.color, thin: true, key: t.id, on: !!state.promoted[t.id] };
-    })).concat([
-      { name: "10y−2y inverted", color: "--gap-inverted", rug: true },
-      { name: "US recessions", color: "--series-1", band: true }
-    ]), function (key) {
-      state.promoted[key] = !state.promoted[key];
-      renderCurve();
-    });
+    ];
+    if (crowd) {
+      CONTEXT.forEach(function (t) { items.push({ name: t.name, color: t.color, thin: true }); });
+    }
+    items.push({ name: "10y−2y inverted", color: "--gap-inverted", rug: true });
+    items.push({ name: "US recessions", color: "--series-1", band: true });
+    legend("legend-legs", items);
   }
 
   function renderRest() {
@@ -1073,6 +1073,15 @@ tr.open td { font-weight: 650; }
       renderCurve();
     });
   });
+  (function () {
+    var b = document.getElementById("all-tenors");
+    if (!b) return;
+    b.addEventListener("click", function () {
+      state.tenors = !state.tenors;
+      b.setAttribute("aria-pressed", state.tenors ? "true" : "false");
+      renderCurve();
+    });
+  }());
   document.querySelectorAll("[data-series]").forEach(function (b) {
     b.addEventListener("click", function () {
       state.show2y = !state.show2y;

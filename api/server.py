@@ -155,7 +155,7 @@ FETCHED = [
         "source": "Federal Reserve H.15, via FRED DGS30",
         "source_url": "https://fred.stlouisfed.org/series/DGS30",
         "units": "percent", "freq": "daily",
-        "note": "Constant maturity, daily since 1977-02-15. Treasury stopped issuing the 30-year in February 2002 and resumed in February 2006; the current FRED vintage carries values through that window, built from the Treasury's long-term extrapolation factor rather than an auctioned 30-year bond. Context tenor on the curve chart, not a leg of any spread computed here.",
+        "note": "Constant maturity, daily since 1977-02-15. Treasury stopped issuing the 30-year in February 2002 and resumed in February 2006; the current FRED vintage carries values through that window, built from the Treasury's long-term extrapolation factor rather than an auctioned 30-year bond. Drawn only behind the legs chart's All tenors toggle.",
     },
     {
         "id": "us_5y",
@@ -164,7 +164,7 @@ FETCHED = [
         "source": "Federal Reserve H.15, via FRED DGS5",
         "source_url": "https://fred.stlouisfed.org/series/DGS5",
         "units": "percent", "freq": "daily",
-        "note": "Constant maturity, daily since 1962-01-02. Context tenor on the curve chart.",
+        "note": "Constant maturity, daily since 1962-01-02. Drawn only behind the legs chart's All tenors toggle.",
     },
     {
         "id": "us_3y",
@@ -173,16 +173,7 @@ FETCHED = [
         "source": "Federal Reserve H.15, via FRED DGS3",
         "source_url": "https://fred.stlouisfed.org/series/DGS3",
         "units": "percent", "freq": "daily",
-        "note": "Constant maturity, daily since 1962-01-02. Context tenor on the curve chart.",
-    },
-    {
-        "id": "us_2y",
-        "fetch": _fred("DGS2"),
-        "label": "US 2-year Treasury yield",
-        "source": "Federal Reserve H.15, via FRED DGS2",
-        "source_url": "https://fred.stlouisfed.org/series/DGS2",
-        "units": "percent", "freq": "daily",
-        "note": "Constant maturity, daily since 1976-06-01. The short leg of the 10y-2y spread published as T10Y2Y, shipped so that spread's arithmetic is checkable against its own legs.",
+        "note": "Constant maturity, daily since 1962-01-02. Drawn only behind the legs chart's All tenors toggle.",
     },
     {
         "id": "us_1y",
@@ -191,7 +182,16 @@ FETCHED = [
         "source": "Federal Reserve H.15, via FRED DGS1",
         "source_url": "https://fred.stlouisfed.org/series/DGS1",
         "units": "percent", "freq": "daily",
-        "note": "Constant maturity, daily since 1962-01-02. Context tenor on the curve chart.",
+        "note": "Constant maturity, daily since 1962-01-02. Drawn only behind the legs chart's All tenors toggle.",
+    },
+    {
+        "id": "us_2y",
+        "fetch": _fred("DGS2"),
+        "label": "US 2-year Treasury yield",
+        "source": "Federal Reserve H.15, via FRED DGS2",
+        "source_url": "https://fred.stlouisfed.org/series/DGS2",
+        "units": "percent", "freq": "daily",
+        "note": "Constant maturity, daily since 1976-06-01. The short leg of the 10y-2y spread published as T10Y2Y, shipped so that spread's arithmetic is checkable against its own legs, and the short line on the legs chart.",
     },
     {
         "id": "us_10y_monthly",
