@@ -6,7 +6,7 @@ of the family (diesel, debt, yield) and the first one built against the shared s
 contract, so decisions made here get inherited by housing, credit, lending and eventually
 the econ overlay. Where this plan and laziness disagree, the plan wins.
 
-Written 2026-09-06. Every series below was probed live from daedalus that day; depths are
+Written 2026-09-06. Every series below was probed live that day; depths are
 measured, not assumed.
 
 ## Verified sources
@@ -29,7 +29,7 @@ Findings from the probe that override what anyone assumes:
 
 1. **`fredgraph.csv` (the keyless FRED endpoint) is unreachable from this host.** Six of six
    attempts timed out at 90s while `api.stlouisfed.org` answered in 0.2s. So the keyed API is
-   primary (`FRED_API_KEY`; debt's key in `/mnt/storage/apps/debt/.env` works, or mint a free
+   primary (`FRED_API_KEY`; debt's key in its own `.env` works, or mint a free
    one), the keyless CSV stays in the code as the documented same-numbers fallback, and the
    **independent** fallback for the US legs is Treasury's own par yield curve XML
    (`home.treasury.gov/...pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=YYYY`,
@@ -146,7 +146,7 @@ plus top-level `updated`, `source` (which upstream produced this snapshot), `rev
 from the curated file). `vintage` is `"current"` everywhere in v1; an ALFRED backfill later
 adds sibling snapshots without reshaping anything.
 
-**RESOLVED 2026-09-07: the shared kit is `/mnt/storage/apps/econ-core`**, built by the
+**RESOLVED 2026-09-07: the shared kit is `econ-core`**, built by the
 parallel jobs session (CONTRACT.md, `econcore.py`, the shared `recessions.json`,
 `vendor.sh`). yield vendors a stamped copy like every other consumer. The addendum below
 records everything in this plan that the landed contract superseded.
@@ -192,7 +192,7 @@ prose interpolate from the payload.
    `scripts/sync-kuma-monitors.py` dry-run before `--execute`.
 6. Screenshots to `screenshots/` (390 mobile fullPage, 1440 desktop) plus the layout audit
    (horizontalScroll false, overflow empty). Playwright paths are relative to
-   `/mnt/storage/apps`.
+   the collection root.
 7. `ls -l data/` shows chris-owned readable files before calling it done.
 8. Push private: `gh repo create Lawrence908/yield --private --source=. --remote=origin --push`.
 
