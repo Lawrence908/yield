@@ -508,8 +508,19 @@ def build_episodes(monthly_entry, recessions):
 MONTH_WORDS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
+# The second sentence exists because the headline names a spread most readers
+# have never heard quoted. 10y-2y is the one in the newspapers; it is not the
+# input to any central bank model. The New York Fed's published recession
+# probability runs on 10y-3m, and the San Francisco Fed's 2022 head-to-head put
+# it ahead of 10y-2y by a noticeable margin, because 10y-2y differences out the
+# near-term policy expectations that carry the signal. Stating that on the chip
+# rather than only in the sources keeps the answer next to the claim.
 CHIP_RULE = ("The curve is inverted when the 10-year yield sits below the "
-             "3-month yield, so the spread is negative.")
+             "3-month yield, so the spread is negative. This page tracks "
+             "10y−3m rather than the more widely quoted 10y−2y because it is "
+             "the spread the New York Fed's published recession probability "
+             "uses, and it has tested better as a predictor; both are drawn "
+             "on the first chart.")
 
 
 def _day_word(iso):
