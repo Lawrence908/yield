@@ -659,12 +659,21 @@ tr.open td { font-weight: 650; }
       ctx.beginPath(); ctx.moveTo(g.left, Math.round(Y(0)) + 0.5); ctx.lineTo(g.right, Math.round(Y(0)) + 0.5); ctx.stroke();
     }
 
-    // x ticks: years, thinned by span
+    // x ticks: years, thinned by how many labels actually fit. Thinning by
+    // span alone was fine while every chart opened at Max, but a 20-year range
+    // on a 390px phone wants the same step as a 60-year range on a desktop,
+    // and the old thresholds gave it ten labels in three hundred pixels.
     ctx.textAlign = "center"; ctx.textBaseline = "top";
     var firstYear = new Date(x0).getUTCFullYear();
     var lastYear = new Date(x1).getUTCFullYear();
     var years = lastYear - firstYear;
-    var stepY = years > 60 ? 10 : years > 30 ? 5 : years > 12 ? 2 : 1;
+    var fits = Math.max(2, Math.floor((g.right - g.left) / 46));
+    var stepY = 1;
+    var steps = [1, 2, 5, 10, 20, 25, 50, 100];
+    for (var si = 0; si < steps.length; si++) {
+      stepY = steps[si];
+      if (years / stepY <= fits) break;
+    }
     for (var yr = Math.ceil(firstYear / stepY) * stepY; yr <= lastYear; yr += stepY) {
       var t = Date.UTC(yr, 0, 1);
       if (t < x0 || t > x1) continue;
@@ -995,18 +1004,21 @@ tr.open td { font-weight: 650; }
     if (s3) t.push({ label: "US 10y−3m", color: "var(--series-1)",
                      value: fmtPp(s3.latest[1]),
                      note: dayWord(s3.latest[0]) + " · " + (s3.inverted ? "inverted" : "not inverted") });
-    if (s2) t.push({ label: "US 10y−2y", color: "var(--series-4)",
+    // A tile swatch means "this is that line's colour on the charts", so the
+    // two spread tiles track their series and the derived tiles below wear
+    // muted ink rather than borrowing a series colour they do not own.
+    if (s2) t.push({ label: "US 10y−2y", color: "var(--series-2)",
                      value: fmtPp(s2.latest[1]),
                      note: dayWord(s2.latest[0]) + " · " + (s2.inverted ? "inverted" : "not inverted") });
     if (s3 && s3.last_negative) {
       var days = Math.round((ms(s3.latest[0]) - ms(s3.last_negative)) / 86400000);
-      t.push({ label: "Last inverted day", color: "var(--series-2)",
+      t.push({ label: "Last inverted day", color: "var(--muted)",
                value: String(days) + "d",
                note: "ago · " + dayWord(s3.last_negative) });
     }
     var stats = (an.episodes || {}).stats;
     if (stats && stats.median_lead_months !== undefined) {
-      t.push({ label: "Median warning", color: "var(--series-3)",
+      t.push({ label: "Median warning", color: "var(--muted)",
                value: stats.median_lead_months + " mo",
                note: "first inversion to NBER peak, " + stats.credited_episodes + " recessions" });
     }
